@@ -11,8 +11,8 @@ public class CarritoService {
     @Autowired
     private CarritoRepository carritoRepository;
 
-    @Autowired
-    private ProductoRepository productoRepository;
+    //@Autowired
+    //private ProductoRepository productoRepository;
 
     @Autowired
     private CarritoItemRepository carritoItemRepository;

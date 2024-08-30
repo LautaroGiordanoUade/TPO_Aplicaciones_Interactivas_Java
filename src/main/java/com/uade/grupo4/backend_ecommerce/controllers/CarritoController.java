@@ -12,30 +12,37 @@ public class CarritoController {
 
 
     @Autowired
-    private CarritoService carritoService:
+    private CarritoService carritoService;
 
-    @PostMapping("/carritoId/agregar")
+    @PostMapping("/{carritoId}/agregar")
     public ResponseEntity<Void> agregarProductoAlCarrito(@PathVariable Long carritoId, @RequestBody Long productoId, @RequestBody int cantidad){
         carritoService.agregarProductoAlCarrito(carritoId,productoId,cantidad);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/carritoId/eliminar")
+    @DeleteMapping("/{carritoId}/eliminar")
     public ResponseEntity<Void> eliminarProductoDelCarrito(@PathVariable Long carritoId, @RequestBody Long productoId,@RequestBody int cantidad) {
         carritoService.eliminarProductoDelCarrito(carritoId, productoId,cantidad);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/carritoId/vaciar")
+    @DeleteMapping("/{carritoId}/vaciar")
     public ResponseEntity<Void> vaciarCarrito(@PathVariable Long carritoId) {
         carritoService.vaciarCarrito(carritoId);
         return ResponseEntity.ok().build();
     }
 
 
-    @PostMapping("/carritoId/checkout")
+    @PostMapping("/{carritoId}/checkout")
     public ResponseEntity<Double> checkoutCarrito(@PathVariable Long carritoId){
         float total = carritoService.checkoutCarrito(carritoId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<String> getcarrito(){
+
+        return ResponseEntity.ok("Hola mundo");
     }
 
 }

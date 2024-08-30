@@ -1,4 +1,4 @@
-package com.uade.grupo4.backend_ecommerce;
+package com.uade.grupo4.backend_ecommerce.uade.grupo4.backend_ecommerce;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

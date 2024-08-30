@@ -1,9 +1,10 @@
 package com.uade.grupo4.backend_ecommerce.repository.entity;
 
+import java.util.List;
+
 public class Carrito {
 
     private Long id;
-
 
     private Usuario usuario;
 
@@ -21,14 +22,6 @@ public class Carrito {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
     }
 
     public List<CarritoItem> getItems() {

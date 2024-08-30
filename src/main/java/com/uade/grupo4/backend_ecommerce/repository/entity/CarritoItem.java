@@ -13,6 +13,7 @@ public class CarritoItem {
         this.cantidad = cantidad;
     }
 
+
     public Long getId() {
         return id;
     }
@@ -29,7 +30,7 @@ public class CarritoItem {
         this.carrito = carrito;
     }
 
-    public Producto getProducto() {
+   /public Producto getProducto() {
         return producto;
     }
 
