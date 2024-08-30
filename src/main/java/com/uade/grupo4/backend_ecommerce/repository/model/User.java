@@ -1,18 +1,19 @@
 package com.uade.grupo4.backend_ecommerce.repository.model;
 
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-//@Entity
-//@Table(name = "users")
+@Entity
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 public class User {
 
-    //@Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private String username;

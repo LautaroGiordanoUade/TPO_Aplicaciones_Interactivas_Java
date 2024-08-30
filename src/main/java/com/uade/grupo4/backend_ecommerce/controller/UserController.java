@@ -22,9 +22,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String>/*<UserDto>*/ loginUser(@RequestBody UserLoginDto userLoginDto) {
-        //UserDto loggedInUser = userService.loginUser(userLoginDto);
-        //return ResponseEntity.ok(loggedInUser);
+    public ResponseEntity<UserDto> loginUser(@RequestBody UserLoginDto userLoginDto) {
+        UserDto loggedInUser = userService.loginUser(userLoginDto);
+        return ResponseEntity.ok(loggedInUser);
+    }
+
+    //Endpoint to test endpoint to be deleted
+    @GetMapping("/login")
+    public ResponseEntity<String> loginTestUser() {
         return ResponseEntity.ok("Usuario Loggeado");
     }
 }
