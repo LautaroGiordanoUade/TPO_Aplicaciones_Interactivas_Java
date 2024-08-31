@@ -29,7 +29,7 @@ public class UserService implements UserServiceInterface {
         user.setLastName(userRegistrationDto.getLastName());
 
         //TODO: to be implemented with Mysql
-        //userRepository.save(user);
+        userRepository.save(user);
 
         return new UserDto(user.getId(),user.getUsername(), user.getEmail(), user.getFirstName(), user.getLastName());
     }
