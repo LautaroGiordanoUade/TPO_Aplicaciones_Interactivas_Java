@@ -2,7 +2,7 @@ package com.uade.grupo4.backend_ecommerce.controller;
 
 
 
-import com.uade.grupo4.backend_ecommerce.service.CartService;
+import com.uade.grupo4.backend_ecommerce.service.implementations.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

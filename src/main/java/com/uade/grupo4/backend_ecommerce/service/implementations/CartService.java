@@ -1,15 +1,17 @@
-package com.uade.grupo4.backend_ecommerce.service;
+package com.uade.grupo4.backend_ecommerce.service.implementations;
 
 
 
+import com.uade.grupo4.backend_ecommerce.controller.Dtos.CartDto;
 import com.uade.grupo4.backend_ecommerce.repository.CartItemRepository;
 import com.uade.grupo4.backend_ecommerce.repository.CartRepository;
 import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
+import com.uade.grupo4.backend_ecommerce.service.interfaces.CartServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CartService {
+public class CartService implements CartServiceInterface {
 
     @Autowired
     private CartRepository cartRepository;
@@ -20,11 +22,11 @@ public class CartService {
     @Autowired
     private CartItemRepository cartItemRepository;
 
-    public void addProductToCart(Long carritoID,Long productId,int quantity){
+    public CartDto addProductToCart(Long carritoID, Long productId, int quantity){
 
     }
 
-    public void removeProductFromCart(Long carritoID,Long productId,int quantity){
+    public CartDto removeProductFromCart(Long carritoID,Long productId,int quantity){
 
     }
 
@@ -35,6 +37,7 @@ public class CartService {
     public float checkoutCart(Long cartId){
         return 0;
     }
+
 
 
 }

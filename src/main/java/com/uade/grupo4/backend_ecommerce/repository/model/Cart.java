@@ -1,13 +1,24 @@
 package com.uade.grupo4.backend_ecommerce.repository.model;
 
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
+
+@Entity
+@Table(name="cart")
+@Data
+@NoArgsConstructor
 
 public class Cart {
 
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private User user;
-
     private List<CartItem> items;
 
     public Cart(Long id, User user, List<CartItem> items) {
