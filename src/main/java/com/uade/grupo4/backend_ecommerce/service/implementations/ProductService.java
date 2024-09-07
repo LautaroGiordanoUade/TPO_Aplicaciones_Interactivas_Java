@@ -1,8 +1,8 @@
-package com.uade.grupo4.backend_ecommerce.service;
+package com.uade.grupo4.backend_ecommerce.service.implementations;
 
 import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
 import com.uade.grupo4.backend_ecommerce.repository.model.Product;
-import com.uade.grupo4.backend_ecommerce.service.model.ProductDto;
+import com.uade.grupo4.backend_ecommerce.controller.dto.ProductDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

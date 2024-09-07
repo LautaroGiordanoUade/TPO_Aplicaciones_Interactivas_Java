@@ -20,11 +20,13 @@ public class Cart {
     private Long id;
     private User user;
     private List<CartItem> items;
+    private float total;
 
-    public Cart(Long id, User user, List<CartItem> items) {
+    public Cart(Long id, User user, List<CartItem> items,float total) {
         this.id = id;
         this.user = user;
         this.items = items;
+        this.total=total;
     }
 
     public Long getId() {
@@ -49,6 +51,14 @@ public class Cart {
 
     public void setItems(List<CartItem> items) {
         this.items = items;
+    }
+
+    public float getTotal() {
+        return total;
+    }
+
+    public void setTotal(float total) {
+        this.total = total;
     }
 }
 

@@ -1,4 +1,4 @@
-package com.uade.grupo4.backend_ecommerce.service.model;
+package com.uade.grupo4.backend_ecommerce.controller.dto;
 
 public class ProductDto {
     private Long id;

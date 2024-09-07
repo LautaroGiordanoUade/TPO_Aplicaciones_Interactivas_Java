@@ -1,9 +1,9 @@
 package com.uade.grupo4.backend_ecommerce.controller;
 
 import com.uade.grupo4.backend_ecommerce.service.interfaces.UserServiceInterface;
-import com.uade.grupo4.backend_ecommerce.controller.Dtos.UserRegistrationDto;
-import com.uade.grupo4.backend_ecommerce.controller.Dtos.UserLoginDto;
-import com.uade.grupo4.backend_ecommerce.controller.Dtos.UserDto;
+import com.uade.grupo4.backend_ecommerce.controller.dto.UserRegistrationDto;
+import com.uade.grupo4.backend_ecommerce.controller.dto.UserLoginDto;
+import com.uade.grupo4.backend_ecommerce.controller.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

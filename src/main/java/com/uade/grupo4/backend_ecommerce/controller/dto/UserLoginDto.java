@@ -1,4 +1,4 @@
-package com.uade.grupo4.backend_ecommerce.controller.Dtos;
+package com.uade.grupo4.backend_ecommerce.controller.dto;
 
 import lombok.Data;
 
