@@ -3,13 +3,13 @@ package com.uade.grupo4.backend_ecommerce.service.implementations;
 
 
 import com.uade.grupo4.backend_ecommerce.controller.dto.CartDto;
-import com.uade.grupo4.backend_ecommerce.controller.dto.CartItemDto;
 import com.uade.grupo4.backend_ecommerce.repository.CartItemRepository;
 import com.uade.grupo4.backend_ecommerce.repository.CartRepository;
 import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
-import com.uade.grupo4.backend_ecommerce.repository.model.Cart;
-import com.uade.grupo4.backend_ecommerce.repository.model.CartItem;
-import com.uade.grupo4.backend_ecommerce.repository.model.Product;
+import com.uade.grupo4.backend_ecommerce.repository.mapper.CartMapper;
+import com.uade.grupo4.backend_ecommerce.repository.entity.Cart;
+import com.uade.grupo4.backend_ecommerce.repository.entity.CartItem;
+import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
 import com.uade.grupo4.backend_ecommerce.service.interfaces.CartServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,15 +36,23 @@ public class CartService implements CartServiceInterface {
 
         CartItem existingItem = cartItemRepository.findByCartAndProduct(cart.getId(), productId);
         if (existingItem != null) {
+            if (product.getQuantity() <(existingItem.getQuantity() + quantity)){
+                throw  new RuntimeException("No hay suficiente stock de "+product.getTitle()+"para agregar"+quantity+
+                        "como maximo se puede agregar"+(product.getQuantity() - existingItem.getQuantity()));
+            }
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
             cartItemRepository.save(existingItem);
         } else {
+            if (product.getQuantity() < quantity ){
+                throw  new RuntimeException("No hay suficiente stock de "+product.getTitle()+"para agregar"+quantity+
+                        "como maximo se puede agregar"+(product.getQuantity()));
+            }
             CartItem newItem = new CartItem(carritoID, cart, product, quantity);
             cartItemRepository.save(newItem);
         }
         cart.setTotal(cart.getTotal() + product.getPrice() * quantity);
         cartRepository.save(cart);
-        return CartDto.toCart(cart);
+        return CartMapper.toDTO(cart);
     }
 
     public CartDto removeProductFromCart(Long carritoID, Long productId, int quantity) throws Exception {
@@ -63,9 +71,12 @@ public class CartService implements CartServiceInterface {
                 cartItemRepository.save(existingItem);
             }
         }
+        else{
+            throw new RuntimeException("El producto"+product.getTitle()+"no existe en el carrito de usted");
+        }//preguntar si hay que crear excepciones
         cart.setTotal(cart.getTotal() - product.getPrice() * quantity);
         cartRepository.save(cart);
-        return CartDto.toCart(cart);
+        return CartMapper.toDTO(cart);
     }
 
 

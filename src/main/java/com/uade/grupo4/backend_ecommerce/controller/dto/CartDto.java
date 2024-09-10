@@ -1,9 +1,5 @@
 package com.uade.grupo4.backend_ecommerce.controller.dto;
 
-import com.uade.grupo4.backend_ecommerce.repository.model.Cart;
-import com.uade.grupo4.backend_ecommerce.repository.model.CartItem;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class CartDto {
@@ -18,14 +14,36 @@ public class CartDto {
         this.items = items;
         this.total=total;
     }
-    public static CartDto toCart(Cart cart){
-        List<CartItemDto> itemDtos=new ArrayList<>();
-        for(CartItem item:cart.getItems()){
-            itemDtos.add(CartItemDto.toCartItem(item));
-        }
-        CartDto cartDto=new CartDto(cart.getId(),cart.getUser(),itemDtos,String.valueOf(cart.getTotal())));
-        return cartDto;
 
+    public Long getId() {
+        return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public UserDto getUser() {
+        return user;
+    }
+
+    public void setUser(UserDto user) {
+        this.user = user;
+    }
+
+    public List<CartItemDto> getItems() {
+        return items;
+    }
+
+    public void setItems(List<CartItemDto> items) {
+        this.items = items;
+    }
+
+    public String getTotal() {
+        return total;
+    }
+
+    public void setTotal(String total) {
+        this.total = total;
+    }
 }

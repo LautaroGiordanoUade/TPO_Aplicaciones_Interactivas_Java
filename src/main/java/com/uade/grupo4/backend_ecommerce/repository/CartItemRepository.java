@@ -1,7 +1,6 @@
 package com.uade.grupo4.backend_ecommerce.repository;
 
-import com.uade.grupo4.backend_ecommerce.repository.model.Cart;
-import com.uade.grupo4.backend_ecommerce.repository.model.CartItem;
+import com.uade.grupo4.backend_ecommerce.repository.entity.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

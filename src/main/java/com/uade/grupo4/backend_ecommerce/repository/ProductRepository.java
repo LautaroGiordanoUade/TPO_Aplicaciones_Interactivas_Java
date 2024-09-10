@@ -1,6 +1,6 @@
 package com.uade.grupo4.backend_ecommerce.repository;
 
-import com.uade.grupo4.backend_ecommerce.repository.model.Product;
+import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package com.uade.grupo4.backend_ecommerce.service.implementations;
 
 import com.uade.grupo4.backend_ecommerce.repository.UserRepository;
-import com.uade.grupo4.backend_ecommerce.repository.model.User;
+import com.uade.grupo4.backend_ecommerce.repository.entity.User;
 import com.uade.grupo4.backend_ecommerce.service.interfaces.UserServiceInterface;
 import com.uade.grupo4.backend_ecommerce.controller.dto.UserDto;
 import com.uade.grupo4.backend_ecommerce.controller.dto.UserRegistrationDto;

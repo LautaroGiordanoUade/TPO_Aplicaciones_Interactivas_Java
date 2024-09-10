@@ -1,4 +1,4 @@
-package com.uade.grupo4.backend_ecommerce.repository.model;
+package com.uade.grupo4.backend_ecommerce.repository.entity;
 
 
 import jakarta.persistence.*;
