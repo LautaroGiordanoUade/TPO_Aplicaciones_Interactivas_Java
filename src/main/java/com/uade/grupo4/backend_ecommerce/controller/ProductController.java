@@ -1,7 +1,7 @@
 package com.uade.grupo4.backend_ecommerce.controller;
 
-import com.uade.grupo4.backend_ecommerce.service.ProductService;
-import com.uade.grupo4.backend_ecommerce.service.model.ProductDto;
+import com.uade.grupo4.backend_ecommerce.service.implementations.ProductService;
+import com.uade.grupo4.backend_ecommerce.controller.dto.ProductDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

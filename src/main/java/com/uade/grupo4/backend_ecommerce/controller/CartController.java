@@ -2,7 +2,7 @@ package com.uade.grupo4.backend_ecommerce.controller;
 
 
 
-import com.uade.grupo4.backend_ecommerce.service.CartService;
+import com.uade.grupo4.backend_ecommerce.service.implementations.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,29 +15,30 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
+
     @PostMapping("/{cartId}/add")
-    public ResponseEntity<Void> addProductToCart(@PathVariable Long carritoId, @RequestBody Long productId, @RequestBody int quantity){
+    public ResponseEntity<Object> addProductToCart(@PathVariable Long carritoId, @RequestBody Long productId, @RequestBody int quantity){
         cartService.addProductToCart(carritoId,productId,quantity);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("El producto se ha agregado correctamente");
     }
 
     @DeleteMapping("/{cartId}/remove")
-    public ResponseEntity<Void> removeProductFromCart(@PathVariable Long carritoId, @RequestBody Long productId,@RequestBody int quantity) {
+    public ResponseEntity<Object> removeProductFromCart(@PathVariable Long carritoId, @RequestBody Long productId,@RequestBody int quantity) throws Exception {
         cartService.removeProductFromCart(carritoId, productId,quantity);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("El producto se ha eliminado correctamente");
     }
 
     @DeleteMapping("/{cartId}/empty")
-    public ResponseEntity<Void> emptyCart(@PathVariable Long carritoId) {
+    public ResponseEntity<Object> emptyCart(@PathVariable Long carritoId) {
         cartService.emptyCart(carritoId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("El carrito se ha vaciado correctamente");
     }
 
 
     @PostMapping("/{cartId}/checkout")
-    public ResponseEntity<Double> checkoutCart(@PathVariable Long carritoId){
+    public ResponseEntity<Float> checkoutCart(@PathVariable Long carritoId){
         float total = cartService.checkoutCart(carritoId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(total);
     }
 
 

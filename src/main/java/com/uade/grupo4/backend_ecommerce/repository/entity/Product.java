@@ -1,14 +1,23 @@
-package com.uade.grupo4.backend_ecommerce.service.model;
+package com.uade.grupo4.backend_ecommerce.repository.entity;
 
-public class ProductDto {
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+public class Product {
     private Long id;
+    private Long userId;
     private String title;
     private String description;
     private Long categoryId;
     private int quantity;
 
-    public ProductDto(Long id, String title, String description, Long categoryId, int quantity) {
+    public Product(Long id, Long userId, String title, String description, Long categoryId, int quantity) {
         this.id = id;
+        this.userId = userId;
         this.title = title;
         this.description = description;
         this.categoryId = categoryId;
@@ -21,6 +30,14 @@ public class ProductDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getTitle() {

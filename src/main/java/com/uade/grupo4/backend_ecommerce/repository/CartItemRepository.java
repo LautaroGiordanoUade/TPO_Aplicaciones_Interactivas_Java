@@ -1,25 +1,16 @@
 package com.uade.grupo4.backend_ecommerce.repository;
 
+import com.uade.grupo4.backend_ecommerce.repository.entity.CartItem;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import com.uade.grupo4.backend_ecommerce.repository.model.CartItem;
-import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-@Repository
-public class CartItemRepository {
-    private final List<CartItem> cartItemList= new ArrayList<>();
-
-    public CartItemRepository(){
-
-    }
-    public Optional<CartItem> findByIDItem(Long id){
-        return cartItemList.stream()
-                .filter(cartItem -> Objects.equals(cartItem.getId(), id))
-                .findFirst();
-    }
-
+public interface CartItemRepository extends JpaRepository<CartItem,Long> {
+    //Optional<CartItem> findByIdItem(Long id);
+    @Query(nativeQuery = true,value = "SELECT * FROM cart_items where cart_id = :cartId and product_id = :productId")
+    CartItem findByCartAndProduct(@Param("cartId") Long cartId, @Param("productId")Long productId);
+    //List<CartItem> findByCart(@Param("cartId") Long cartId);
 }
