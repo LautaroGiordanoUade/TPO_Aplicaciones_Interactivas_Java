@@ -3,6 +3,8 @@ package com.uade.grupo4.backend_ecommerce.service.implementations;
 
 
 import com.uade.grupo4.backend_ecommerce.controller.dto.CartDto;
+import com.uade.grupo4.backend_ecommerce.controller.dto.CartItemDto;
+import com.uade.grupo4.backend_ecommerce.controller.dto.UserDto;
 import com.uade.grupo4.backend_ecommerce.repository.CartItemRepository;
 import com.uade.grupo4.backend_ecommerce.repository.CartRepository;
 import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
@@ -50,9 +52,9 @@ public class CartService implements CartServiceInterface {
             CartItem newItem = new CartItem(carritoID, cart, product, quantity);
             cartItemRepository.save(newItem);
         }
-        cart.setTotal(cart.getTotal() + product.getPrice() * quantity);
+        cart.setTotal(cart.getTotal() + 10 * quantity);
         cartRepository.save(cart);
-        return CartMapper.toDTO(cart);
+        return new CartDto(carritoID,new UserDto(1,"Federico","fed","fe","fe"), (List<CartItemDto>) existingItem,"10");
     }
 
     public CartDto removeProductFromCart(Long carritoID, Long productId, int quantity) throws Exception {
@@ -74,43 +76,43 @@ public class CartService implements CartServiceInterface {
         else{
             throw new RuntimeException("El producto"+product.getTitle()+"no existe en el carrito de usted");
         }//preguntar si hay que crear excepciones
-        cart.setTotal(cart.getTotal() - product.getPrice() * quantity);
+        cart.setTotal(cart.getTotal() - 10 * quantity);
         cartRepository.save(cart);
-        return CartMapper.toDTO(cart);
+        return new CartDto(carritoID,new UserDto(1,"Federico","fed","fe","fe"), (List<CartItemDto>) existingItem,"10");
     }
 
 
     public void emptyCart(Long cartId) {
         Cart cart = cartRepository.findById(cartId).orElseThrow();
-        List<CartItem> cartItems = cartItemRepository.findByCart(cartId);
+        /*List<CartItem> cartItems = cartItemRepository.findByCart(cartId);
         for (CartItem item : cartItems) {
-            Long productId = item.getProduct().getId();
+            //Long productId = item.getProduct().getId();
             int quantity = item.getQuantity();
-            Product product = productRepository.findById(productId).orElseThrow();
-            product.setQuantity(product.getQuantity() + quantity);
-            productRepository.save(product); // QUE LO PASE A REPOSITORIO
+            //Product product = productRepository.findById(productId).orElseThrow();
+            //product.setQuantity(product.getQuantity() + quantity);
+            //productRepository.save(product); // QUE LO PASE A REPOSITORIO
         }
         cartItemRepository.deleteAll(cartItems);
-        cart.setItems(new ArrayList<>());
-        cartRepository.save(cart);
+        //cart.setItems(new ArrayList<>());
+        cartRepository.save(cart);*/
     }
 
     public float checkoutCart(Long cartId) {
         Cart cart = cartRepository.findById(cartId).orElseThrow();
-        List<CartItem> cartItems = cartItemRepository.findByCart(cartId);
+       /* List<CartItem> cartItems = cartItemRepository.findByCart(cartId);
         for (CartItem item : cartItems) {
-            Long productId = item.getProduct().getId();
+            //Long productId = item.getProduct().getId();
             int quantity = item.getQuantity();
-            Product product = productRepository.findById(productId).orElseThrow();
-            if (product.getQuantity() < quantity) {
-                throw new RuntimeException("La cantidad de" + product.getTitle() + "solicita es mayor a nuestro Stock actual");
-            }
-            product.setQuantity(product.getQuantity() - quantity);
-            productRepository.save(product);
-            cart.setTotal(cart.getTotal() + product.getPrice() * quantity);
-        }
-        cartItemRepository.deleteAll(cartItems);
-        cart.setItems(new ArrayList<>());
+            //Product product = productRepository.findById(productId).orElseThrow();
+           // if (product.getQuantity() < quantity) {
+                //throw new RuntimeException("La cantidad de" + product.getTitle() + "solicita es mayor a nuestro Stock actual");
+            //}
+            //product.setQuantity(product.getQuantity() - quantity);
+            //productRepository.save(product);
+            cart.setTotal(cart.getTotal() + 10 * quantity);
+        }*/
+        //cartItemRepository.deleteAll(cartItems);
+        //cart.setItems(new ArrayList<>());
         cartRepository.save(cart);
         return cart.getTotal();
 

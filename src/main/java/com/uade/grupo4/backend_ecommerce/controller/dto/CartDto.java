@@ -1,5 +1,8 @@
 package com.uade.grupo4.backend_ecommerce.controller.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 public class CartDto {

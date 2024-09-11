@@ -1,5 +1,12 @@
 package com.uade.grupo4.backend_ecommerce.repository.entity;
 
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
 public class Product {
     private Long id;
     private Long userId;

@@ -18,14 +18,14 @@ public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private User user;
-    private List<CartItem> items;
+   // @OneToOne private User user;
+    //@OneToMany private List<CartItem> items;
     private float total;
 
     public Cart(Long id, User user, List<CartItem> items,float total) {
         this.id = id;
-        this.user = user;
-        this.items = items;
+        //this.user = user;
+        //this.items = items;
         this.total=total;
     }
 
@@ -36,7 +36,7 @@ public class Cart {
     public void setId(Long id) {
         this.id = id;
     }
-
+/*
     public User getUser() {
         return user;
     }
@@ -52,7 +52,7 @@ public class Cart {
     public void setItems(List<CartItem> items) {
         this.items = items;
     }
-
+*/
     public float getTotal() {
         return total;
     }

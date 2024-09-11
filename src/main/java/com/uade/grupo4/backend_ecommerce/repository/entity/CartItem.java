@@ -15,15 +15,15 @@ public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Cart cart;
-    private Product product;
+    //@OneToOne private Cart cart;
+    //@OneToOne private Product product;
     private int quantity;
 
 
     public CartItem(Long id, Cart cart, Product product, int quantity) {
         this.id = id;
-        this.cart = cart;
-        this.product = product;
+        //this.cart = cart;
+        //this.product = product;
         this.quantity = quantity;
     }
 
@@ -34,7 +34,7 @@ public class CartItem {
     public void setId(Long id) {
         this.id = id;
     }
-
+/*
     public Cart getCart() {
         return cart;
     }
@@ -50,7 +50,7 @@ public class CartItem {
     public void setProduct(Product product) {
         this.product = product;
     }
-
+*/
     public int getQuantity() {
         return quantity;
     }
