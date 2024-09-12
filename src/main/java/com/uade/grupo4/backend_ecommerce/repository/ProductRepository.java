@@ -14,8 +14,8 @@ public class ProductRepository {
     private final List<Product> products = new ArrayList<>();
 
     public ProductRepository() {
-        products.add(new Product(1L, 1L, "Samsung A54", "Celular BBB", 1L, 100));
-        products.add(new Product(2L, 1L, "Samsung S24", "Celular gama alta", 1L, 30));
+        products.add(new Product(1L, 1L, "Samsung A54", "Celular BBB", 1L, 100, 700_000L));
+        products.add(new Product(2L, 1L, "Samsung S24", "Celular gama alta", 1L, 30, 2_000_000L));
     }
 
     public List<Product> listProducts() {
