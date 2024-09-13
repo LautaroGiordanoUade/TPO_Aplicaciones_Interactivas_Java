@@ -1,6 +1,7 @@
 package com.uade.grupo4.backend_ecommerce.repository;
 
 import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -9,9 +10,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class ProductRepository {
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    private final List<Product> products = new ArrayList<>();
+    List<Product> findByUserId(Long userId);
+
+    List<Product> findByCategoryId(Long categoryId);
+
+    /*private final List<Product> products = new ArrayList<>();
 
     public ProductRepository() {
         products.add(new Product(1L, 1L, "Samsung A54", "Celular BBB", 1L, 100, 700_000L));
@@ -32,5 +37,5 @@ public class ProductRepository {
         return products.stream()
                 .filter(product -> Objects.equals(product.getUserId(), userId))
                 .toList();
-    }
+    }*/
 }

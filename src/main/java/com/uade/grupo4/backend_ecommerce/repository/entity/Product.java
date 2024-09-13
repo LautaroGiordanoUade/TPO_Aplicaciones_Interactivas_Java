@@ -16,15 +16,23 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    private String title;
+    @Column(nullable = false)
+    private String name;
 
+    @Column(nullable = false)
     private String description;
 
-    private Long categoryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
+    @Column(nullable = false)
     private int quantity;
 
+    @Column(nullable = false)
     private Long price;
 }
