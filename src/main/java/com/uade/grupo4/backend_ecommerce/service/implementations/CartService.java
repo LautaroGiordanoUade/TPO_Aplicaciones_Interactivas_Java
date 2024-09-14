@@ -89,9 +89,9 @@ public class CartService implements CartServiceInterface {
         for (CartItem item : cartItems) {
             Long productId = item.getProduct().getId();
             int quantity = item.getQuantity();
-            //Product product = productRepository.findById(productId).orElseThrow();
-            //product.setQuantity(product.getQuantity() + quantity);
-            //productRepository.save(product);
+            Product product = productRepository.findById(productId).orElseThrow();
+            product.setQuantity(product.getQuantity() + quantity);
+            productRepository.save(product);
         }
         cartItemRepository.deleteAll(cartItems);
         cart.setItems(new ArrayList<>());
@@ -105,12 +105,12 @@ public class CartService implements CartServiceInterface {
         for (CartItem item : cartItems) {
             Long productId = item.getProduct().getId();
             int quantity = item.getQuantity();
-            //Product product = productRepository.findById(productId).orElseThrow();
-           // if (product.getQuantity() < quantity) {
-                //throw new RuntimeException("La cantidad de" + product.getTitle() + "solicita es mayor a nuestro Stock actual");
-            //}
-            //product.setQuantity(product.getQuantity() - quantity);
-            //productRepository.save(product);
+            Product product = productRepository.findById(productId).orElseThrow();
+            if (product.getQuantity() < quantity) {
+                throw new RuntimeException("La cantidad de" + product.getName() + "solicita es mayor a nuestro Stock actual");
+            }
+            product.setQuantity(product.getQuantity() - quantity);
+            productRepository.save(product);
             cart.setTotal(cart.getTotal() + 10 * quantity);
         }
         cartItemRepository.deleteAll(cartItems);

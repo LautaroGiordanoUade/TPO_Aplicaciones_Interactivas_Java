@@ -40,7 +40,6 @@ public class CartController {
 
     }
 
-
     @PostMapping("/{cartId}/checkout")
     public ResponseEntity<Float> checkoutCart(@PathVariable Long carritoId){
         float total = cartService.checkoutCart(carritoId);
@@ -50,6 +49,6 @@ public class CartController {
 
     @GetMapping("/HolaCarrito")
     public ResponseEntity<String>TesteandoCarrito (){
-        return ResponseEntity.ok("El que se mueve es gay");
+        return ResponseEntity.ok("El carrito funciona bien");
     }
 }
