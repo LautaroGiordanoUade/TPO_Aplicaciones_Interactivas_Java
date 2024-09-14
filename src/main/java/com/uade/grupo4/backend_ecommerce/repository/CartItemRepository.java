@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface CartItemRepository extends JpaRepository<CartItem,Long> {
     //Optional<CartItem> findByIdItem(Long id);
     @Query(nativeQuery = true,value = "SELECT * FROM cart_items where cart_id = :cartId and product_id = :productId")
-    CartItem findByCartAndProduct(@Param("cartId") Long cartId, @Param("productId")Long productId);
-    //List<CartItem> findByCart(@Param("cartId") Long cartId);
+    CartItem findByCartIdAndProductId(@Param("cartId") Long cartId, @Param("productId")Long productId);
+    List<CartItem> findByCartId(@Param("cartId") Long cartId);
 }

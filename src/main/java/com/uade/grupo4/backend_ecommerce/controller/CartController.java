@@ -30,8 +30,14 @@ public class CartController {
 
     @DeleteMapping("/{cartId}/empty")
     public ResponseEntity<Object> emptyCart(@PathVariable Long carritoId) {
-        cartService.emptyCart(carritoId);
-        return ResponseEntity.ok("El carrito se ha vaciado correctamente");
+        boolean isEmpty=cartService.emptyCart(carritoId);
+        if (isEmpty){
+            return ResponseEntity.ok("El carrito se ha vaciado correctamente");
+        }
+        else{
+            return ResponseEntity.badRequest().body("El carrito ya estaba vacio");
+        }
+
     }
 
 
@@ -42,4 +48,8 @@ public class CartController {
     }
 
 
+    @GetMapping("/HolaCarrito")
+    public ResponseEntity<String>TesteandoCarrito (){
+        return ResponseEntity.ok("El que se mueve es gay");
+    }
 }
