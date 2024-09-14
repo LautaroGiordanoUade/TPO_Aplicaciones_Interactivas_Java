@@ -1,15 +1,12 @@
 package com.uade.grupo4.backend_ecommerce.controller.dto;
 
+import com.uade.grupo4.backend_ecommerce.repository.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ProductDto {
+public class CategoryDto {
     private Long id;
     private String name;
-    private String description;
-    private Long categoryId;
-    private int quantity;
-    private Long price;
 }
