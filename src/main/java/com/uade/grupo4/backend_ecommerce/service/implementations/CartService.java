@@ -39,14 +39,14 @@ public class CartService implements CartServiceInterface {
         CartItem existingItem = cartItemRepository.findByCartAndProduct(cart.getId(), productId);
         if (existingItem != null) {
             if (product.getQuantity() <(existingItem.getQuantity() + quantity)){
-                throw  new RuntimeException("No hay suficiente stock de "+product.getTitle()+"para agregar"+quantity+
+                throw  new RuntimeException("No hay suficiente stock de "+product.getName()+"para agregar"+quantity+
                         "como maximo se puede agregar"+(product.getQuantity() - existingItem.getQuantity()));
             }
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
             cartItemRepository.save(existingItem);
         } else {
             if (product.getQuantity() < quantity ){
-                throw  new RuntimeException("No hay suficiente stock de "+product.getTitle()+"para agregar"+quantity+
+                throw  new RuntimeException("No hay suficiente stock de "+product.getName()+"para agregar"+quantity+
                         "como maximo se puede agregar"+(product.getQuantity()));
             }
             CartItem newItem = new CartItem(carritoID, cart, product, quantity);
@@ -74,7 +74,7 @@ public class CartService implements CartServiceInterface {
             }
         }
         else{
-            throw new RuntimeException("El producto"+product.getTitle()+"no existe en el carrito de usted");
+            throw new RuntimeException("El producto"+product.getName()+"no existe en el carrito de usted");
         }//preguntar si hay que crear excepciones
         cart.setTotal(cart.getTotal() - 10 * quantity);
         cartRepository.save(cart);
