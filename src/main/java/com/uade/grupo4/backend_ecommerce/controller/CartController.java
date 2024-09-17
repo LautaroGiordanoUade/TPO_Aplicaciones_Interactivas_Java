@@ -2,8 +2,11 @@ package com.uade.grupo4.backend_ecommerce.controller;
 
 
 
+import com.uade.grupo4.backend_ecommerce.controller.dto.CartDto;
+import com.uade.grupo4.backend_ecommerce.controller.dto.ProductCartDTO;
 import com.uade.grupo4.backend_ecommerce.service.implementations.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,21 +19,35 @@ public class CartController {
     private CartService cartService;
 
 
-    @PostMapping("/{cartId}/add")
-    public ResponseEntity<Object> addProductToCart(@PathVariable Long carritoId, @RequestBody Long productId, @RequestBody int quantity){
-        cartService.addProductToCart(carritoId,productId,quantity);
-        return ResponseEntity.ok("El producto se ha agregado correctamente");
+    @PostMapping("/add")
+    public ResponseEntity<Object> addProductToCart(@RequestBody ProductCartDTO productCartDTO){
+        CartDto cartAdd= cartService.addProductToCart(productCartDTO.getProductId(),productCartDTO.getQuantity());
+        if(cartAdd.getId().equals(-1L)){
+            return ResponseEntity.badRequest().body("No hay esa cantidad de stock para agregar al producto ingresado");
+        }
+        else if (cartAdd.getId().equals(-2L)){
+            return ResponseEntity.badRequest().body("No hay esa cantidad de stock para poner del producto ingresado");
+        }
+        else
+            return ResponseEntity.ok("El producto se ha agregado correctamente");
     }
 
-    @DeleteMapping("/{cartId}/remove")
-    public ResponseEntity<Object> removeProductFromCart(@PathVariable Long carritoId, @RequestBody Long productId,@RequestBody int quantity) throws Exception {
-        cartService.removeProductFromCart(carritoId, productId,quantity);
-        return ResponseEntity.ok("El producto se ha eliminado correctamente");
+    @DeleteMapping("/remove")
+    public ResponseEntity<String> deleteProductFromCart(@RequestBody ProductCartDTO productCartDTO) throws Exception {
+        CartDto cartDelete=cartService.removeProductFromCart(productCartDTO.getProductId(),productCartDTO.getQuantity());
+        if(cartDelete.getId().equals(-1L)){
+            return ResponseEntity.badRequest().body("No se puede quedar la cantidad en negativo ");
+        }
+        else  if(cartDelete.getId().equals(-2L)){
+            return ResponseEntity.badRequest().body("No se puede eliminar un producto que no esta en el carrito");
+        }
+        else
+            return ResponseEntity.ok("El producto se ha eliminado correctamente");
     }
 
-    @DeleteMapping("/{cartId}/empty")
-    public ResponseEntity<Object> emptyCart(@PathVariable Long carritoId) {
-        boolean isEmpty=cartService.emptyCart(carritoId);
+    @DeleteMapping("/empty")
+    public ResponseEntity<Object> emptyCart() {
+        boolean isEmpty=cartService.emptyCart();
         if (isEmpty){
             return ResponseEntity.ok("El carrito se ha vaciado correctamente");
         }
@@ -40,10 +57,15 @@ public class CartController {
 
     }
 
-    @PostMapping("/{cartId}/checkout")
-    public ResponseEntity<Float> checkoutCart(@PathVariable Long carritoId){
-        float total = cartService.checkoutCart(carritoId);
-        return ResponseEntity.ok(total);
+    @PostMapping("/checkout")
+    public ResponseEntity<Float> checkoutCart(){
+        float total = cartService.checkoutCart();
+        if (total == -1){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(-1f);
+        }
+        else{
+            return ResponseEntity.ok(total);
+        }
     }
 
 

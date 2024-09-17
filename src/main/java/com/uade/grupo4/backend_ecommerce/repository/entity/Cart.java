@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -18,16 +19,19 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
-    @OneToMany
+    @ManyToMany
     private List<CartItem> items;
     private float total;
+    private Date checkoutDate;
 
-    public Cart(Long id, User user, List<CartItem> items,float total) {
+    public Cart(Long id, User user, List<CartItem> items,float total,Date checkoutDate ) {
         this.id = id;
         this.user = user;
         this.items = items;
         this.total=total;
+        this.checkoutDate=checkoutDate;
     }
 
 

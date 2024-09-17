@@ -11,11 +11,14 @@ import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Cart;
 import com.uade.grupo4.backend_ecommerce.repository.entity.CartItem;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
+import com.uade.grupo4.backend_ecommerce.repository.entity.User;
+import com.uade.grupo4.backend_ecommerce.repository.mapper.CartMapper;
 import com.uade.grupo4.backend_ecommerce.service.interfaces.CartServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -31,39 +34,52 @@ public class CartService implements CartServiceInterface {
     private CartItemRepository cartItemRepository;
 
 
-    public CartDto addProductToCart(Long carritoID, Long productId, int quantity) {
-        Cart cart = cartRepository.findById(carritoID).orElseThrow();
+    public CartDto addProductToCart(Long productId, int quantity) {
+        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", ""),
+                null).orElse(null); // agregar la busqueda de user
+
+        if (cart == null){
+            cart=new Cart();
+            cart.setUser(new User(1, "", "", "", null, "", ""));
+            cartRepository.save(cart);
+        }
         Product product = productRepository.findById(productId).orElseThrow();
-        CartItem existingItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId);
+        CartItem existingItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId);// VER QUE ROMPE ACA
+
         if (existingItem != null) {
             if (product.getQuantity() <(existingItem.getQuantity() + quantity)){
-                throw  new RuntimeException("No hay suficiente stock de "+product.getName()+"para agregar"+quantity+
-                        "como maximo se puede agregar"+(product.getQuantity() - existingItem.getQuantity()));
+                return new CartDto(-1L ,new UserDto(1,"Federico","fed","fe","fe"), null,"0");
             }
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
             cartItemRepository.save(existingItem);
+            cart.getItems().add(existingItem);
         } else {
             if (product.getQuantity() < quantity ){
-                throw  new RuntimeException("No hay suficiente stock de "+product.getName()+"para agregar"+quantity+
-                        "como maximo se puede agregar"+(product.getQuantity()));
+                return new CartDto(-2L ,new UserDto(1,"Federico","fed","fe","fe"), null,"0");
             }
-            CartItem newItem = new CartItem(carritoID, cart, product, quantity);
+            CartItem newItem = new CartItem(cart,product, quantity);
             cartItemRepository.save(newItem);
+
+            cart.getItems().add(newItem);
         }
         cart.setTotal(cart.getTotal() + product.getPrice() * quantity);
         cartRepository.save(cart);
-        return new CartDto(carritoID,new UserDto(1,"Federico","fed","fe","fe"), (List<CartItemDto>) existingItem,"10");
-    }//poner el mapper toDTO
+        //return CartMapper.toDTO(cart);
+        return new CartDto(cart.getId(),new UserDto(1,"Federico","fed","fe","fe"), (List<CartItemDto>) existingItem,String.valueOf(cart.getTotal()));
+    }
 
-    public CartDto removeProductFromCart(Long carritoID, Long productId, int quantity) throws Exception {
-        Cart cart = cartRepository.findById(carritoID).orElseThrow();
+
+
+    public CartDto removeProductFromCart(Long productId, int quantity) throws Exception {
+        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", ""),
+                null).orElse(null); // agregar la busqueda de user
+
         Product product = productRepository.findById(productId).orElseThrow();
-
         CartItem existingItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId);
         if (existingItem != null) {
             int newQuantity = existingItem.getQuantity() - quantity;
             if (newQuantity < 0) {
-                throw new Exception("La cantidad no puede ser negativa");
+                return new CartDto(-1L ,new UserDto(1,"Federico","fed","fe","fe"), null,"0");
             } else if (newQuantity == 0) {
                 cartItemRepository.delete(existingItem);
             } else {
@@ -72,17 +88,19 @@ public class CartService implements CartServiceInterface {
             }
         }
         else{
-            throw new RuntimeException("El producto"+product.getName()+"no existe en el carrito de usted");
-        }//preguntar si hay que crear excepciones
+            return new CartDto(-2L ,new UserDto(1,"Federico","fed","fe","fe"), null,"0");
+        }
         cart.setTotal(cart.getTotal() - product.getPrice() * quantity);
         cartRepository.save(cart);
-        return new CartDto(carritoID,new UserDto(1,"Federico","fed","fe","fe"), (List<CartItemDto>) existingItem,"10");
-    }//poner el mapper toDTO
+        //return CartMapper.toDTO(cart);
+        return new CartDto(cart.getId(),new UserDto(1,"Federico","fed","fe","fe"), (List<CartItemDto>) existingItem,"10");
+    }
 
 
-    public boolean emptyCart(Long cartId) {
-        Cart cart = cartRepository.findById(cartId).orElseThrow();
-        List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
+    public boolean emptyCart() {
+        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", ""),
+                null).orElse(null); // agregar la busqueda de user
+        List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
         if(cartItems.isEmpty()){
             return false;
         }
@@ -99,25 +117,33 @@ public class CartService implements CartServiceInterface {
         return true;
     }
 
-    public float checkoutCart(Long cartId) {
-        Cart cart = cartRepository.findById(cartId).orElseThrow();
-        List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
+    public float checkoutCart() {
+        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", ""),
+                null).orElse(null); // agregar la busqueda de user
+        List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
         for (CartItem item : cartItems) {
             Long productId = item.getProduct().getId();
             int quantity = item.getQuantity();
             Product product = productRepository.findById(productId).orElseThrow();
+
             if (product.getQuantity() < quantity) {
-                throw new RuntimeException("La cantidad de" + product.getName() + "solicita es mayor a nuestro Stock actual");
+                return -1;
             }
             product.setQuantity(product.getQuantity() - quantity);
             productRepository.save(product);
             cart.setTotal(cart.getTotal() + 10 * quantity);
+
         }
         cartItemRepository.deleteAll(cartItems);
+        for (CartItem item:cartItems){
+            cartItemRepository.deleteById(item.getId());
+        }
         cart.setItems(new ArrayList<>());
+        cart.setCheckoutDate(new Date());
         cartRepository.save(cart);
         return cart.getTotal();
 
     }
+    //Agregar lo de fecha de Checkout
 
 }
