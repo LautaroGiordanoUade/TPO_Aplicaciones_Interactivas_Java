@@ -6,31 +6,24 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "Transactions")
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date dateTransaction;
-
     @ManyToOne
     @JoinColumn(name = "profile_id")
     private Profile profile;
+    @OneToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+    private Date transactionDate;
 
-    @ManyToMany
-    @JoinTable(
-            name = "transactions_products",
-            joinColumns = @JoinColumn(name = "transaction_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private List<Product> product;
-
-    public Date getDateTransaction() {
-        return dateTransaction;
+    public Profile getProfile() {
+        return profile;
     }
 
-    public void setDateTransaction(Date dateTransaction) {
-        this.dateTransaction = dateTransaction;
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
 
     public Long getId() {
@@ -41,19 +34,19 @@ public class Transaction {
         this.id = id;
     }
 
-    public Profile getProfile() {
-        return profile;
+    public Cart getCart() {
+        return cart;
     }
 
-    public void setProfile(Profile profile) {
-        this.profile = profile;
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 
-    public List<Product> getProduct() {
-        return product;
+    public Date getTransactionDate() {
+        return transactionDate;
     }
 
-    public void setProduct(List<Product> product) {
-        this.product = product;
+    public void setTransactionDate(Date transactionDate) {
+        this.transactionDate = transactionDate;
     }
 }
