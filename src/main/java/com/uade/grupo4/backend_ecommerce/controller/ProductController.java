@@ -65,4 +65,10 @@ public class ProductController {
         final List<ProductDto> products = productService.getByCategoryId(id);
         return ResponseEntity.ok(products);
     }
+
+    @GetMapping("/featured")
+    public ResponseEntity<List<ProductDto>> getFeturedProducts() {
+        final List<ProductDto> products = productService.getFeaturedProducts();
+        return ResponseEntity.ok(products);
+    }
 }

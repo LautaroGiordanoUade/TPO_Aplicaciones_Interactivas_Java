@@ -18,21 +18,14 @@ public class ProductMapper {
                 product.getDescription(),
                 product.getCategory().getId(),
                 product.getQuantity(),
-                product.getPrice()
+                product.getPrice(),
+                product.isFeatured()
         );
     }
 
     public static List<ProductDto> toDtoList(List<Product> products) {
         return products.stream().map(
-                product ->
-                        new ProductDto(
-                                product.getId(),
-                                product.getName(),
-                                product.getDescription(),
-                                product.getCategory().getId(),
-                                product.getQuantity(),
-                                product.getPrice()
-                        )
+                ProductMapper::toDto
         ).toList();
     }
 
@@ -44,22 +37,14 @@ public class ProductMapper {
                 productDto.getDescription(),
                 new Category(productDto.getCategoryId(), null),
                 productDto.getQuantity(),
-                productDto.getPrice()
+                productDto.getPrice(),
+                productDto.isFeatured()
         );
     }
 
     public static List<Product> toEntityList(List<ProductDto> productDtos) {
         return productDtos.stream().map(
-                productDto ->
-                        new Product(
-                                productDto.getId(),
-                                null,
-                                productDto.getName(),
-                                productDto.getDescription(),
-                                new Category(productDto.getCategoryId(), null),
-                                productDto.getQuantity(),
-                                productDto.getPrice()
-                        )
+                ProductMapper::toEntity
         ).toList();
     }
 }

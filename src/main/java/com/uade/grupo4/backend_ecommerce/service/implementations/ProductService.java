@@ -67,4 +67,9 @@ public class ProductService {
         final List<Product> products = productRepository.findByCategoryId(categoryId);
         return ProductMapper.toDtoList(products);
     }
+
+    public List<ProductDto> getFeaturedProducts() {
+        final List<Product> products = productRepository.findByFeatured(true);
+        return ProductMapper.toDtoList(products);
+    }
 }

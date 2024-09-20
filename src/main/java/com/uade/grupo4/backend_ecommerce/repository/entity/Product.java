@@ -35,4 +35,7 @@ public class Product {
 
     @Column(nullable = false)
     private Long price;
+
+    @Column(nullable = false)
+    private boolean featured;
 }

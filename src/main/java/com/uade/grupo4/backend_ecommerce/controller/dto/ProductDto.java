@@ -12,4 +12,5 @@ public class ProductDto {
     private Long categoryId;
     private int quantity;
     private Long price;
+    private boolean featured;
 }
