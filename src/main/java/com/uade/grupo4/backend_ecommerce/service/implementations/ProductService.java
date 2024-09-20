@@ -1,11 +1,12 @@
 package com.uade.grupo4.backend_ecommerce.service.implementations;
 
+import com.uade.grupo4.backend_ecommerce.controller.dto.ProductDto;
 import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
 import com.uade.grupo4.backend_ecommerce.repository.UserRepository;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
-import com.uade.grupo4.backend_ecommerce.controller.dto.ProductDto;
-import com.uade.grupo4.backend_ecommerce.repository.entity.User;
 import com.uade.grupo4.backend_ecommerce.repository.mapper.ProductMapper;
+import com.uade.grupo4.backend_ecommerce.repository.mapper.UserMapper;
+import com.uade.grupo4.backend_ecommerce.service.interfaces.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +19,19 @@ public class ProductService {
     ProductRepository productRepository;
 
     @Autowired
+    private UserServiceInterface userService;
+
+    @Autowired
     UserRepository userRepository;
 
     public ProductDto saveProduct(ProductDto productDto) {
         Product product = ProductMapper.toEntity(productDto);
         // TODO: get user id from authentication
-        //Long userId = SecurityContextHolder.getContext().getAuthentication().getId();
+        // TODO:Question: creo que producService tiene q recibir por parametro el usuario y obtenerlo en un nivel mas
+        // arriba, sino se pierde encapsulamiento del servicio, en este caso saveproducto
+        //Long userId = SecurityContextHolder.getContext().getAuthentication().getName();
         //product.setUser(userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found")));
-        product.setUser(new User(1, "", "", "", null, "", ""));
+        product.setUser(UserMapper.toEntity(userService.getCurrentUser()));
         Product savedProduct = productRepository.save(product);
         return ProductMapper.toDto(savedProduct);
     }
@@ -37,9 +43,11 @@ public class ProductService {
         }
         Product product = ProductMapper.toEntity(productDto);
         // TODO: get user id from authentication
+        // TODO:Question: creo que producService tiene q recibir por parametro el usuario y obtenerlo en un nivel mas
+        // arriba, sino se pierde encapsulamiento del servicio, en este caso saveproducto
         //Long userId = SecurityContextHolder.getContext().getAuthentication().getId();
         //product.setUser(userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found")));
-        product.setUser(new User(1, "", "", "", null, "", ""));
+        product.setUser(UserMapper.toEntity(userService.getCurrentUser()));
         Product savedProduct = productRepository.save(product);
         return ProductMapper.toDto(savedProduct);
     }
