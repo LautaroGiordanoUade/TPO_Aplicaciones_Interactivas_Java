@@ -4,6 +4,7 @@ import com.uade.grupo4.backend_ecommerce.controller.dto.ProductDto;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Category;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
 
+import java.util.HashSet;
 import java.util.List;
 
 public class ProductMapper {
@@ -38,7 +39,8 @@ public class ProductMapper {
                 new Category(productDto.getCategoryId(), null),
                 productDto.getQuantity(),
                 productDto.getPrice(),
-                productDto.isFeatured()
+                productDto.isFeatured(),
+                new HashSet<>()
         );
     }
 

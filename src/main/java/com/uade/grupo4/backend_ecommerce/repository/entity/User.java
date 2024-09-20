@@ -5,9 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @Data
 @NoArgsConstructor
 public class User {
@@ -22,6 +24,9 @@ public class User {
     private LocalDate birthDate;
     private String firstName;
     private String lastName;
+
+    @OneToMany(mappedBy = "user")
+    private Set<FavoriteProduct> favorites = new HashSet<>();;
 
     public User(int id, String username, String email, String password, LocalDate birthDate, String firstName, String lastName) {
         this.id = id;
