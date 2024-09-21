@@ -1,6 +1,7 @@
 package com.uade.grupo4.backend_ecommerce.repository.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @Table(name="cart")
 @Data
 @NoArgsConstructor
-
+@AllArgsConstructor
 public class Cart {
 
 
@@ -21,18 +22,12 @@ public class Cart {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToMany
+    @OneToMany
     private List<CartItem> items;
     private float total;
     private Date checkoutDate;
 
-    public Cart(Long id, User user, List<CartItem> items,float total,Date checkoutDate ) {
-        this.id = id;
-        this.user = user;
-        this.items = items;
-        this.total=total;
-        this.checkoutDate=checkoutDate;
-    }
+
 
 
 }

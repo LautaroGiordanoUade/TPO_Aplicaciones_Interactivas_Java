@@ -8,7 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name ="cartItem")
+@Table(name ="cart_item")
 @Data
 @NoArgsConstructor
 
@@ -18,16 +18,12 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name="cart_id")
-    private Cart cart;
-    @ManyToOne
     @JoinColumn(name="product_id")
     private Product product;
     private int quantity;
 
 
-    public CartItem( Cart cart, Product product, int quantity) {
-        this.cart = cart;
+    public CartItem( Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
     }
