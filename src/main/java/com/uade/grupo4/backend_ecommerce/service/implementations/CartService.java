@@ -5,8 +5,10 @@ package com.uade.grupo4.backend_ecommerce.service.implementations;
 import com.uade.grupo4.backend_ecommerce.controller.dto.CartDto;
 import com.uade.grupo4.backend_ecommerce.controller.dto.CartItemDto;
 import com.uade.grupo4.backend_ecommerce.controller.dto.UserDto;
+import com.uade.grupo4.backend_ecommerce.exception.*;
 import com.uade.grupo4.backend_ecommerce.repository.CartItemRepository;
 import com.uade.grupo4.backend_ecommerce.repository.CartRepository;
+import com.uade.grupo4.backend_ecommerce.repository.Enum.RoleEnum;
 import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Cart;
 import com.uade.grupo4.backend_ecommerce.repository.entity.CartItem;
@@ -37,11 +39,12 @@ public class CartService implements CartServiceInterface {
 
     public CartDto addProductToCart(Long productId, int quantity) {
         //Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", ""), null).orElse(null); // agregar la busqueda de user
-        Cart cart=cartRepository.findByUser(new User(1, "", "", "", null, "", "")).orElse(null);
-    //CAMBIAR EL NEW USER POR LA VALIDACION DEL USUARIO, ACA YA FUNCIONA QUE SI ES NUEVO LO CREA Y SINO LO CAMBIA PARA QUE SEA NUEVO y si no es ninguna sigueee
+        Cart cart=cartRepository.findByUser(new User(1, "", "", "", null, "", "",RoleEnum.USER)).orElse(null);
+
+
         if (cart == null ){
             cart=new Cart();
-            cart.setUser(new User(1, "", "", "", null, "", ""));
+            cart.setUser(new User(1,"","","",null,"","",RoleEnum.USER));
             cart.setItems(new ArrayList<CartItem>());
             cartRepository.save(cart);
         }else if (cart.getCheckoutDate() != null) {
@@ -52,14 +55,15 @@ public class CartService implements CartServiceInterface {
         CartItem existingItem= cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
         if (existingItem != null) {
             if (product.getQuantity() <(existingItem.getQuantity() + quantity)){
-                return new CartDto(-1L ,new UserDto(1,"Federico","fed","fe","fe"), null,"0");
+                throw new ProductInCartOutOfStockException("No hay mas cantidad de stock para agregar al producto ingresado"+product.getName());
+
             }
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
             cartItemRepository.save(existingItem);
         } else {
             if (product.getQuantity() < quantity ){
+                throw new NewProductOutOfStockException("No hay esa cantidad de stock para agregar al producto ingresado"+product.getName());
 
-                return new CartDto(-2L ,new UserDto(1,"Federico","fed","fe","fe"), null,"0"); //Ver de poner alguna excepcion
             }
             CartItem newItem = new CartItem(product, quantity);
             cartItemRepository.save(newItem);
@@ -69,23 +73,26 @@ public class CartService implements CartServiceInterface {
         float total=cart.getTotal() + (product.getPrice() * quantity);
         cart.setTotal(cart.getTotal() + (product.getPrice() * quantity));
         cartRepository.save(cart);
-        //return CartMapper.toDTO(cart); agregarlo cuando lauti tenga su USERMAPPER
-        return new CartDto(cart.getId(),new UserDto(1,"Federico","fed","fe","fe"), new ArrayList<CartItemDto>(),String.valueOf(cart.getTotal()));
+
+        return CartMapper.toDTO(cart);
+
     }
 
 
 
     public CartDto removeProductFromCart(Long productId, int quantity) throws Exception {
-        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", ""),
-                null).orElse(null);// agregar la busqueda de user
+        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", "", RoleEnum.USER),
+                null).orElse(null); // agregar la busqueda de user
         //validar que existe el cart
+
         CartItem cartItem= cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
         Product product = productRepository.findById(productId).orElseThrow();
 
         if (cartItem != null) {
             int newQuantity = cartItem.getQuantity() - quantity;
             if (newQuantity < 0) {
-                return new CartDto(-1L ,new UserDto(1,"Federico","fed","fe","fe"), null,"0");
+                throw new NegativeCartException("No puede quedar la cantidad en negativo");
+
             } else if (newQuantity == 0) {
                 cart.getItems().remove(cartItem);
                 cartItemRepository.delete(cartItem);
@@ -95,22 +102,23 @@ public class CartService implements CartServiceInterface {
             }
         }
         else{
-            return new CartDto(-2L ,new UserDto(1,"Federico","fed","fe","fe"), null,"0");
+            throw new ProductRemovalFromCartException("No se puede eliminar un producto que no esta en el carrito");
+
         }
         cart.setTotal(cart.getTotal() - (product.getPrice() * quantity));
         cartRepository.save(cart);
-        //return CartMapper.toDTO(cart); agregarlo cuando lauti tenga su USERMAPPER
-        return new CartDto(cart.getId(),new UserDto(1,"Federico","fed","fe","fe"), new ArrayList<CartItemDto>(),"10");
+        return CartMapper.toDTO(cart);
+
     }
 
 
     public boolean emptyCart() {
-        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", ""),
+        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", "", RoleEnum.USER),
                 null).orElse(null); // agregar la busqueda de user
-        assert cart != null;
+
         List<CartItem> cartItems = cart.getItems().stream().toList();
         if(cartItems.isEmpty()){
-            return false;
+            throw new CartWasEmptyPreviouslyException("El carrito ya estaba vacio");
         }
         for (CartItem item : cartItems) {
             Long productId = item.getProduct().getId();
@@ -128,17 +136,21 @@ public class CartService implements CartServiceInterface {
     }
 
     public float checkoutCart() {
-        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", ""),
+
+        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", "", RoleEnum.USER),
                 null).orElse(null); // agregar la busqueda de user
-        assert cart != null;
+
         List<CartItem> cartItems = cart.getItems().stream().toList();
+        if(cartItems.isEmpty()){
+            throw new EmptyCartException("No hay items en el carrito");
+        }
         for (CartItem item : cartItems) {
             Long productId = item.getProduct().getId();
             int quantity = item.getQuantity();
             Product product = productRepository.findById(productId).orElseThrow();
 
             if (product.getQuantity() < quantity) {
-                return -1;
+                throw new ProductOutOfStockException("No hay Stock disponible para el producto"+item.getProduct().getName());
             }
             product.setQuantity(product.getQuantity() - quantity);
             productRepository.save(product);
@@ -152,6 +164,6 @@ public class CartService implements CartServiceInterface {
         return cart.getTotal();
 
     }
-    //Agregar lo de fecha de Checkout
+
 
 }

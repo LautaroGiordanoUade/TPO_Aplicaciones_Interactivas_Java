@@ -28,8 +28,6 @@ public class Cart {
     private Date checkoutDate;
 
 
-
-
 }
 
 

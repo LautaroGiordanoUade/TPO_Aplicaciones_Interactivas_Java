@@ -4,7 +4,6 @@ import com.uade.grupo4.backend_ecommerce.controller.dto.CartItemDto;
 import com.uade.grupo4.backend_ecommerce.repository.entity.CartItem;
 
 public class CartItemMapper {
-/*
 
 
     public static CartItemDto toDTO(CartItem item){
@@ -21,6 +20,6 @@ public class CartItemMapper {
                 Integer.parseInt(dto.getQuantity())
         );
 
-    }*/
+    }
 
 }

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CartMapper {
-/*
+
     public static CartDto toDTO(Cart cart){
         List<CartItemDto> itemDtos=new ArrayList<>();
         for(CartItem item:cart.getItems()){
@@ -18,7 +18,8 @@ public class CartMapper {
         return new CartDto(cart.getId(),
                 UserMapper.toDto(cart.getUser()),
                 itemDtos,
-                String.valueOf(cart.getTotal())
+                String.valueOf(cart.getTotal()),
+                cart.getCheckoutDate()
         );
 
     }
@@ -31,8 +32,9 @@ public class CartMapper {
         return new Cart(dto.getId(),
                 UserMapper.toEntity(dto.getUser()),
                 items,
-                Float.valueOf(dto.getTotal())
+                Float.valueOf(dto.getTotal()),
+                dto.getChechkoutDate()
                 );
 
-    } */
+    }
 }
