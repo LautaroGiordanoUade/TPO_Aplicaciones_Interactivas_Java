@@ -1,18 +1,28 @@
 package com.uade.grupo4.backend_ecommerce.repository.entity;
 
+import com.uade.grupo4.backend_ecommerce.repository.Enum.RoleEnum;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "user")
-@Data
 @NoArgsConstructor
-public class User {
+@AllArgsConstructor
+@Builder
+@Table(name = "users")
+@Data
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,17 +34,19 @@ public class User {
     private LocalDate birthDate;
     private String firstName;
     private String lastName;
+    @Enumerated(EnumType.STRING)
+    private RoleEnum role;
 
     @OneToMany(mappedBy = "user")
-    private Set<FavoriteProduct> favorites = new HashSet<>();;
+    private Set<FavoriteProduct> favorites = new HashSet<>();
 
-    public User(int id, String username, String email, String password, LocalDate birthDate, String firstName, String lastName) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.birthDate = birthDate;
-        this.firstName = firstName;
-        this.lastName = lastName;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
     }
 }
