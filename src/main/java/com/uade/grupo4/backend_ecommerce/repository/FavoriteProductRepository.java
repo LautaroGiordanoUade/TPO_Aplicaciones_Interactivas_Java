@@ -1,6 +1,6 @@
 package com.uade.grupo4.backend_ecommerce.repository;
 
-import com.uade.grupo4.backend_ecommerce.repository.entity.FavoriteProduct;;
+import com.uade.grupo4.backend_ecommerce.repository.entity.FavoriteProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

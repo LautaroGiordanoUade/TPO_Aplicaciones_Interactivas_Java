@@ -40,13 +40,8 @@ public class ProductMapper {
                 productDto.getQuantity(),
                 productDto.getPrice(),
                 productDto.isFeatured(),
+                new HashSet<>(),
                 new HashSet<>()
         );
-    }
-
-    public static List<Product> toEntityList(List<ProductDto> productDtos) {
-        return productDtos.stream().map(
-                ProductMapper::toEntity
-        ).toList();
     }
 }

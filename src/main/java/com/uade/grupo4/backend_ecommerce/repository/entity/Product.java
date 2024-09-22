@@ -43,5 +43,8 @@ public class Product {
     private boolean featured;
 
     @OneToMany(mappedBy = "product")
-    private Set<FavoriteProduct> favorites = new HashSet<>();;
+    private Set<FavoriteProduct> favorites = new HashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    private Set<ViewedProduct> viewed = new HashSet<>();
 }

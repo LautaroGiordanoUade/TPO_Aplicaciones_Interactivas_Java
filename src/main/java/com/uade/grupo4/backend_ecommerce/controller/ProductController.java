@@ -100,4 +100,10 @@ public class ProductController {
         List<ProductDto> favoriteProducts = productService.getFavorites();
         return ResponseEntity.ok(favoriteProducts);
     }
+
+    @GetMapping("viewed")
+    public ResponseEntity<List<ProductDto>> getViewed() {
+        List<ProductDto> favoriteProducts = productService.getViewed();
+        return ResponseEntity.ok(favoriteProducts);
+    }
 }

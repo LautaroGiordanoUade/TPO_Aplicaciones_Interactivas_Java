@@ -38,7 +38,10 @@ public class User implements UserDetails {
     private RoleEnum role;
 
     @OneToMany(mappedBy = "user")
-    private Set<FavoriteProduct> favorites = new HashSet<>();
+    private Set<FavoriteProduct> favoriteProducts = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<ViewedProduct> viewedProducts = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

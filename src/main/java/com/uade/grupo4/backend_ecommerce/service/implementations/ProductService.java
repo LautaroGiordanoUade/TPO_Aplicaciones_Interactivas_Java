@@ -3,10 +3,12 @@ package com.uade.grupo4.backend_ecommerce.service.implementations;
 import com.uade.grupo4.backend_ecommerce.exception.ResourceNotFoundException;
 import com.uade.grupo4.backend_ecommerce.repository.FavoriteProductRepository;
 import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
+import com.uade.grupo4.backend_ecommerce.repository.ViewedProductRepository;
 import com.uade.grupo4.backend_ecommerce.repository.entity.FavoriteProduct;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
 import com.uade.grupo4.backend_ecommerce.controller.dto.ProductDto;
 import com.uade.grupo4.backend_ecommerce.repository.entity.User;
+import com.uade.grupo4.backend_ecommerce.repository.entity.ViewedProduct;
 import com.uade.grupo4.backend_ecommerce.repository.mapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ public class ProductService {
     ProductRepository productRepository;
     @Autowired
     FavoriteProductRepository favoriteProductRepository;
+    @Autowired
+    ViewedProductRepository viewedProductRepository;
 
     public ProductDto saveProduct(ProductDto productDto) {
         Product product = ProductMapper.toEntity(productDto);
@@ -55,6 +59,9 @@ public class ProductService {
     public ProductDto getById(Long id) {
         final Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontró el producto."));
+
+        saveViewedProduct(product);
+
         return ProductMapper.toDto(product);
     }
 
@@ -100,7 +107,35 @@ public class ProductService {
     public List<ProductDto> getFavorites() {
         Long userId = userService.getLoggedUser().getId();
         final Set<FavoriteProduct> favoriteProducts = favoriteProductRepository.findByUserId(userId);
-        final List<Product> products = favoriteProducts.stream().map(FavoriteProduct::getProduct).toList();
+        final List<Product> products = favoriteProducts.stream()
+                .sorted((p1, p2) -> p2.getAddedDate().compareTo(p1.getAddedDate()))
+                .map(FavoriteProduct::getProduct).toList();
         return ProductMapper.toDtoList(products);
+    }
+
+    public List<ProductDto> getViewed() {
+        Long userId = userService.getLoggedUser().getId();
+        final Set<ViewedProduct> viewedProducts = viewedProductRepository.findByUserId(userId);
+        final List<Product> products = viewedProducts.stream()
+                .sorted((p1, p2) -> p2.getAddedDate().compareTo(p1.getAddedDate()))
+                .map(ViewedProduct::getProduct).limit(10).toList();
+        return ProductMapper.toDtoList(products);
+    }
+
+    private void saveViewedProduct(final Product product) {
+        User user = userService.getLoggedUser();
+        if(user != null) {
+            ViewedProduct viewedProduct = viewedProductRepository.findByUserIdAndProductId(user.getId(), product.getId()).orElse(null);
+            if(viewedProduct == null) {
+                viewedProduct = new ViewedProduct();
+                viewedProduct.setProduct(product);
+                viewedProduct.setUser(user);
+                viewedProduct.setAddedDate(LocalDateTime.now());
+                viewedProductRepository.save(viewedProduct);
+            } else {
+                viewedProduct.setAddedDate(LocalDateTime.now());
+            }
+            viewedProductRepository.save(viewedProduct);
+        }
     }
 }
