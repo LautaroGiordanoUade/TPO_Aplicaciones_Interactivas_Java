@@ -17,9 +17,6 @@ public interface ViewedProductRepository extends JpaRepository<ViewedProduct, Lo
     Set<ViewedProduct> findByUserId(Long userId);
     Optional<ViewedProduct> findByUserIdAndProductId(Long userId, Long productId);
 
-    //@Query("DELETE FROM ViewedProduct f WHERE f.product.id = :productId")
-    //void deleteByProductId(@Param("productId") Long productId);
-
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM viewed_product f WHERE f.product_id = :productId", nativeQuery = true)

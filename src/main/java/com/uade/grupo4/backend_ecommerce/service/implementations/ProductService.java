@@ -11,6 +11,7 @@ import com.uade.grupo4.backend_ecommerce.repository.entity.User;
 import com.uade.grupo4.backend_ecommerce.repository.entity.ViewedProduct;
 import com.uade.grupo4.backend_ecommerce.repository.mapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,12 +40,11 @@ public class ProductService {
     }
 
     public ProductDto updateProduct(ProductDto productDto) {
-        final Product currentProduct = productRepository.findById(productDto.getId()).orElse(null);
-        if (currentProduct == null) {
-            return null;
-        }
+        final Product currentProduct = productRepository.findById(productDto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró el producto."));
         Product product = ProductMapper.toEntity(productDto);
         product.setUser(userService.getLoggedUser());
+        product.getImages().forEach(i -> i.setProduct(product));
         Product savedProduct = productRepository.save(product);
         return ProductMapper.toDto(savedProduct);
     }
@@ -128,19 +128,21 @@ public class ProductService {
     }
 
     private void saveViewedProduct(final Product product) {
-        User user = userService.getLoggedUser();
-        if(user != null) {
-            ViewedProduct viewedProduct = viewedProductRepository.findByUserIdAndProductId(user.getId(), product.getId()).orElse(null);
-            if(viewedProduct == null) {
-                viewedProduct = new ViewedProduct();
-                viewedProduct.setProduct(product);
-                viewedProduct.setUser(user);
-                viewedProduct.setAddedDate(LocalDateTime.now());
+        if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+            User user = userService.getLoggedUser();
+            if (user != null) {
+                ViewedProduct viewedProduct = viewedProductRepository.findByUserIdAndProductId(user.getId(), product.getId()).orElse(null);
+                if (viewedProduct == null) {
+                    viewedProduct = new ViewedProduct();
+                    viewedProduct.setProduct(product);
+                    viewedProduct.setUser(user);
+                    viewedProduct.setAddedDate(LocalDateTime.now());
+                    viewedProductRepository.save(viewedProduct);
+                } else {
+                    viewedProduct.setAddedDate(LocalDateTime.now());
+                }
                 viewedProductRepository.save(viewedProduct);
-            } else {
-                viewedProduct.setAddedDate(LocalDateTime.now());
             }
-            viewedProductRepository.save(viewedProduct);
         }
     }
 }

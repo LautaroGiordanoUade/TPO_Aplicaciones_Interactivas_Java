@@ -17,9 +17,6 @@ public interface FavoriteProductRepository extends JpaRepository<FavoriteProduct
     Set<FavoriteProduct> findByUserId(Long userId);
     Optional<FavoriteProduct> findByUserIdAndProductId(Long userId, Long productId);
 
-    //@Query("DELETE FROM FavoriteProduct f WHERE f.product.id = :productId")
-    //void deleteByProductId(@Param("productId") Long productId);
-
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM favorite_product f WHERE f.product_id = :productId", nativeQuery = true)

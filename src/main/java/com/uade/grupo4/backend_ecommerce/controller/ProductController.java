@@ -18,13 +18,13 @@ public class ProductController {
     @Autowired
     ProductService productService;
 
-    @PostMapping
+    @PostMapping("/admin")
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
         ProductDto createdProduct = productService.saveProduct(productDto);
         return ResponseEntity.created(URI.create("/api/v1/product/" + createdProduct.getId())).body(createdProduct);
     }
 
-    @PutMapping
+    @PutMapping("/admin")
     public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto) {
         ProductDto updatedProduct = productService.updateProduct(productDto);
 
@@ -35,7 +35,7 @@ public class ProductController {
         return ResponseEntity.ok(updatedProduct);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
@@ -57,7 +57,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/user")
+    @GetMapping("/admin")
     public ResponseEntity<List<ProductDto>> getProductByUserId() {
         final List<ProductDto> products = productService.getByUserId();
         return ResponseEntity.ok(products);
@@ -75,7 +75,7 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    @PostMapping("favorite/{id}")
+    @PostMapping("/user/favorite/{id}")
     public ResponseEntity<?> addFavorite(@PathVariable Long id) {
         try {
             ProductDto productDto = productService.addFavorite(id);
@@ -85,7 +85,7 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping("favorite/{id}")
+    @DeleteMapping("/user/favorite/{id}")
     public ResponseEntity<?> removeFavorite(@PathVariable Long id) {
         try {
             productService.removeFavorite(id);
@@ -95,13 +95,13 @@ public class ProductController {
         }
     }
 
-    @GetMapping("favorites")
+    @GetMapping("/user/favorites")
     public ResponseEntity<List<ProductDto>> getFavorites() {
         List<ProductDto> favoriteProducts = productService.getFavorites();
         return ResponseEntity.ok(favoriteProducts);
     }
 
-    @GetMapping("viewed")
+    @GetMapping("/user/viewed")
     public ResponseEntity<List<ProductDto>> getViewed() {
         List<ProductDto> favoriteProducts = productService.getViewed();
         return ResponseEntity.ok(favoriteProducts);

@@ -80,6 +80,6 @@ public class UserService implements UserServiceInterface {
             return currentUser;
         }
 
-        throw new UsernameNotFoundException("User is not authenticated.");
+        return null;
     }
 }
