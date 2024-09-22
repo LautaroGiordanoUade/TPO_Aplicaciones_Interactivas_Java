@@ -18,7 +18,27 @@ public class UserService implements UserServiceInterface {
     private UserRepository userRepository;
 
     public UserDto registerUser(UserRegistrationDto userRegistrationDto) {
+
+        if (userRegistrationDto.getUsername() == null || userRegistrationDto.getUsername().isEmpty() ||
+                userRegistrationDto.getEmail() == null || userRegistrationDto.getEmail().isEmpty() ||
+                userRegistrationDto.getPassword() == null || userRegistrationDto.getPassword().isEmpty() ||
+                userRegistrationDto.getBirthDate() == null ||
+                userRegistrationDto.getFirstName() == null || userRegistrationDto.getFirstName().isEmpty() ||
+                userRegistrationDto.getLastName() == null || userRegistrationDto.getLastName().isEmpty()) {
+
+            throw new IllegalArgumentException("There is missed user basic data.");
+        }
+
+        if (userRepository.findByEmail(userRegistrationDto.getEmail()).isPresent()) {
+            throw new IllegalStateException("The email is already used.");
+        }
+
+        if (userRepository.findByUsername(userRegistrationDto.getUsername()).isPresent()) {
+            throw new IllegalStateException("The username is already taken.");
+        }
+
         User user = new User();
+
         user.setUsername(userRegistrationDto.getUsername());
         user.setEmail(userRegistrationDto.getEmail());
         user.setPassword(userRegistrationDto.getPassword());

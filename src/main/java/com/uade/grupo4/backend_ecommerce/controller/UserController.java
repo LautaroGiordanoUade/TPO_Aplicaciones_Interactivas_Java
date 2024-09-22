@@ -14,7 +14,8 @@ public class UserController {
 
     @Autowired
     private UserServiceInterface userService;
-    // Registro de usuario solo permitido para ADMIN
+
+
     @PostMapping("/register")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UserDto> registerUser(@RequestBody UserRegistrationDto userRegistrationDto) {
@@ -22,7 +23,7 @@ public class UserController {
         return ResponseEntity.ok(registeredUser);
     }
 
-    // Modificación de datos del usuario solo permitido para ADMIN
+
     @PatchMapping("/{userId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) throws Exception {
@@ -30,7 +31,6 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    // Obtención de datos de usuario solo permitido para ADMIN
     @GetMapping("/{userId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UserDto> getUserById(@PathVariable long userId) throws Exception {
