@@ -12,6 +12,7 @@ import com.uade.grupo4.backend_ecommerce.repository.entity.ViewedProduct;
 import com.uade.grupo4.backend_ecommerce.repository.mapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +33,7 @@ public class ProductService {
     public ProductDto saveProduct(ProductDto productDto) {
         Product product = ProductMapper.toEntity(productDto);
         product.setUser(userService.getLoggedUser());
+        product.getImages().forEach(i -> i.setProduct(product));
         Product savedProduct = productRepository.save(product);
         return ProductMapper.toDto(savedProduct);
     }
@@ -47,7 +49,10 @@ public class ProductService {
         return ProductMapper.toDto(savedProduct);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void deleteProduct(Long id) {
+        favoriteProductRepository.deleteByProductId(id);
+        viewedProductRepository.deleteByProductId(id);
         productRepository.deleteById(id);
     }
 
