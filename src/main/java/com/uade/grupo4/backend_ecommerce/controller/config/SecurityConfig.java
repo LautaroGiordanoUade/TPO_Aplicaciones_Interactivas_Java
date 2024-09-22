@@ -27,6 +27,7 @@ public class SecurityConfig {
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(req -> req.requestMatchers("/api/v1/auth/**").permitAll()
                                                 .requestMatchers("/api/v1/users/**").hasAnyAuthority(RoleEnum.ADMIN.name())
+                                        .requestMatchers("/api/v1/product/**").hasAnyAuthority(RoleEnum.ADMIN.name())
                                                 .anyRequest()
                                                 .authenticated())
                                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
