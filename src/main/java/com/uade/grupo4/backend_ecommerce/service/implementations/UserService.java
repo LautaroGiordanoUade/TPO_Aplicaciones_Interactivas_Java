@@ -9,7 +9,10 @@ import com.uade.grupo4.backend_ecommerce.repository.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService implements UserServiceInterface {
@@ -68,5 +71,15 @@ public class UserService implements UserServiceInterface {
         }
 
         throw new IllegalStateException("User is not authenticated");
+    }
+
+    public User getLoggedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof User currentUser) {
+            return currentUser;
+        }
+
+        return null;
     }
 }

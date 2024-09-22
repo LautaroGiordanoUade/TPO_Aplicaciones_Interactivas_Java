@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -24,7 +26,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String username;
     private String email;
@@ -34,6 +36,12 @@ public class User implements UserDetails {
     private String lastName;
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
+
+    @OneToMany(mappedBy = "user")
+    private Set<FavoriteProduct> favoriteProducts = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<ViewedProduct> viewedProducts = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

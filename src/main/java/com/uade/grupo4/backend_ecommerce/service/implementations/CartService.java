@@ -54,7 +54,7 @@ public class CartService implements CartServiceInterface {
         }
         cart.setTotal(cart.getTotal() + 10 * quantity);
         cartRepository.save(cart);
-        return new CartDto(carritoID,new UserDto(1,"Federico","fed","fe","fe"), (List<CartItemDto>) existingItem,"10");
+        return new CartDto(carritoID,new UserDto(1L,"Federico","fed","fe","fe"), (List<CartItemDto>) existingItem,"10");
     }
 
     public CartDto removeProductFromCart(Long carritoID, Long productId, int quantity) throws Exception {
@@ -78,7 +78,7 @@ public class CartService implements CartServiceInterface {
         }//preguntar si hay que crear excepciones
         cart.setTotal(cart.getTotal() - 10 * quantity);
         cartRepository.save(cart);
-        return new CartDto(carritoID,new UserDto(1,"Federico","fed","fe","fe"), (List<CartItemDto>) existingItem,"10");
+        return new CartDto(carritoID,new UserDto(1L,"Federico","fed","fe","fe"), (List<CartItemDto>) existingItem,"10");
     }
 
 
