@@ -16,6 +16,7 @@ import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
 import com.uade.grupo4.backend_ecommerce.repository.entity.User;
 import com.uade.grupo4.backend_ecommerce.repository.mapper.CartMapper;
 import com.uade.grupo4.backend_ecommerce.service.interfaces.CartServiceInterface;
+import com.uade.grupo4.backend_ecommerce.service.interfaces.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,15 +37,17 @@ public class CartService implements CartServiceInterface {
     @Autowired
     private CartItemRepository cartItemRepository;
 
+    @Autowired
+    private UserServiceInterface userServiceInterface;
 
-    public CartDto addProductToCart(Long productId, int quantity) {
-        //Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", ""), null).orElse(null); // agregar la busqueda de user
-        Cart cart=cartRepository.findByUser(new User(1, "", "", "", null, "", "",RoleEnum.USER)).orElse(null);
 
+
+    public CartDto addProductToCart(Long productId, int quantity,User user) {
+        Cart cart=cartRepository.findByUser(user).orElse(null);
 
         if (cart == null ){
             cart=new Cart();
-            cart.setUser(new User(1,"","","",null,"","",RoleEnum.USER));
+            cart.setUser(user);
             cart.setItems(new ArrayList<CartItem>());
             cartRepository.save(cart);
         }else if (cart.getCheckoutDate() != null) {
@@ -55,14 +58,14 @@ public class CartService implements CartServiceInterface {
         CartItem existingItem= cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
         if (existingItem != null) {
             if (product.getQuantity() <(existingItem.getQuantity() + quantity)){
-                throw new ProductInCartOutOfStockException("No hay mas cantidad de stock para agregar al producto ingresado"+product.getName());
+                throw new ProductInCartOutOfStockException("No hay mas cantidad de stock para agregar al producto ingresado: "+product.getName());
 
             }
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
             cartItemRepository.save(existingItem);
         } else {
             if (product.getQuantity() < quantity ){
-                throw new NewProductOutOfStockException("No hay esa cantidad de stock para agregar al producto ingresado"+product.getName());
+                throw new NewProductOutOfStockException("No hay esa cantidad de stock para agregar al producto ingresado: "+product.getName());
 
             }
             CartItem newItem = new CartItem(product, quantity);
@@ -70,6 +73,7 @@ public class CartService implements CartServiceInterface {
 
             cart.getItems().add(newItem);
         }
+
         float total=cart.getTotal() + (product.getPrice() * quantity);
         cart.setTotal(cart.getTotal() + (product.getPrice() * quantity));
         cartRepository.save(cart);
@@ -80,10 +84,8 @@ public class CartService implements CartServiceInterface {
 
 
 
-    public CartDto removeProductFromCart(Long productId, int quantity) throws Exception {
-        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", "", RoleEnum.USER),
-                null).orElse(null); // agregar la busqueda de user
-        //validar que existe el cart
+    public CartDto removeProductFromCart(Long productId, int quantity,User user) throws Exception {
+        Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
 
         CartItem cartItem= cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
         Product product = productRepository.findById(productId).orElseThrow();
@@ -103,7 +105,6 @@ public class CartService implements CartServiceInterface {
         }
         else{
             throw new ProductRemovalFromCartException("No se puede eliminar un producto que no esta en el carrito");
-
         }
         cart.setTotal(cart.getTotal() - (product.getPrice() * quantity));
         cartRepository.save(cart);
@@ -112,10 +113,11 @@ public class CartService implements CartServiceInterface {
     }
 
 
-    public boolean emptyCart() {
-        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", "", RoleEnum.USER),
-                null).orElse(null); // agregar la busqueda de user
-
+    public boolean emptyCart(User user) {
+        Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
+        if (cart == null){
+            throw new CartWasEmptyPreviouslyException("El carrito ya estaba vacio");
+        }
         List<CartItem> cartItems = cart.getItems().stream().toList();
         if(cartItems.isEmpty()){
             throw new CartWasEmptyPreviouslyException("El carrito ya estaba vacio");
@@ -135,11 +137,11 @@ public class CartService implements CartServiceInterface {
         return true;
     }
 
-    public float checkoutCart() {
-
-        Cart cart = cartRepository.findByUserAndCheckoutDate(new User(1, "", "", "", null, "", "", RoleEnum.USER),
-                null).orElse(null); // agregar la busqueda de user
-
+    public float checkoutCart(User user) {
+        Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
+        if (cart == null){
+            throw new EmptyCartException("No hay items en el carrito");
+        }
         List<CartItem> cartItems = cart.getItems().stream().toList();
         if(cartItems.isEmpty()){
             throw new EmptyCartException("No hay items en el carrito");
