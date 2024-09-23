@@ -3,12 +3,9 @@ package com.uade.grupo4.backend_ecommerce.service.implementations;
 
 
 import com.uade.grupo4.backend_ecommerce.controller.dto.CartDto;
-import com.uade.grupo4.backend_ecommerce.controller.dto.CartItemDto;
-import com.uade.grupo4.backend_ecommerce.controller.dto.UserDto;
 import com.uade.grupo4.backend_ecommerce.exception.*;
 import com.uade.grupo4.backend_ecommerce.repository.CartItemRepository;
 import com.uade.grupo4.backend_ecommerce.repository.CartRepository;
-import com.uade.grupo4.backend_ecommerce.repository.Enum.RoleEnum;
 import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Cart;
 import com.uade.grupo4.backend_ecommerce.repository.entity.CartItem;
@@ -38,7 +35,7 @@ public class CartService implements CartServiceInterface {
     private CartItemRepository cartItemRepository;
 
     @Autowired
-    private UserServiceInterface userServiceInterface;
+    private UserService userService;
 
 
 
@@ -74,7 +71,7 @@ public class CartService implements CartServiceInterface {
             cart.getItems().add(newItem);
         }
 
-        float total=cart.getTotal() + (product.getPrice() * quantity);
+
         cart.setTotal(cart.getTotal() + (product.getPrice() * quantity));
         cartRepository.save(cart);
 
@@ -84,7 +81,7 @@ public class CartService implements CartServiceInterface {
 
 
 
-    public CartDto removeProductFromCart(Long productId, int quantity,User user) throws Exception {
+    public CartDto removeProductFromCart(Long productId, int quantity,User user)  {
         Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
 
         CartItem cartItem= cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
