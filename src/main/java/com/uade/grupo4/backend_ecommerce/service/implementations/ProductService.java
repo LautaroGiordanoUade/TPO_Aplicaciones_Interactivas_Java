@@ -40,11 +40,11 @@ public class ProductService {
     }
 
     public ProductDto updateProduct(ProductDto productDto) {
-        final Product currentProduct = productRepository.findById(productDto.getId())
+        Product currentProduct = productRepository.findById(productDto.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontró el producto."));
         Product product = ProductMapper.toEntity(productDto);
         product.setUser(userService.getLoggedUser());
-        product.getImages().forEach(i -> i.setProduct(product));
+        product.getImages().forEach(i -> i.setProduct(currentProduct));
         Product savedProduct = productRepository.save(product);
         return ProductMapper.toDto(savedProduct);
     }
