@@ -1,8 +1,12 @@
 package com.uade.grupo4.backend_ecommerce.controller.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDto {
     private long id;
     private String username;

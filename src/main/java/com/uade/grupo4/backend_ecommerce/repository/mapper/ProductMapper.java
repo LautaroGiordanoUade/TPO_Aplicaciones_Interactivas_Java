@@ -4,6 +4,7 @@ import com.uade.grupo4.backend_ecommerce.controller.dto.ProductDto;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Category;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
 
+import java.util.HashSet;
 import java.util.List;
 
 public class ProductMapper {
@@ -18,21 +19,15 @@ public class ProductMapper {
                 product.getDescription(),
                 product.getCategory().getId(),
                 product.getQuantity(),
-                product.getPrice()
+                product.getPrice(),
+                product.isFeatured(),
+                ProductImageMapper.toDtoList(product.getImages())
         );
     }
 
     public static List<ProductDto> toDtoList(List<Product> products) {
         return products.stream().map(
-                product ->
-                        new ProductDto(
-                                product.getId(),
-                                product.getName(),
-                                product.getDescription(),
-                                product.getCategory().getId(),
-                                product.getQuantity(),
-                                product.getPrice()
-                        )
+                ProductMapper::toDto
         ).toList();
     }
 
@@ -44,22 +39,11 @@ public class ProductMapper {
                 productDto.getDescription(),
                 new Category(productDto.getCategoryId(), null),
                 productDto.getQuantity(),
-                productDto.getPrice()
+                productDto.getPrice(),
+                productDto.isFeatured(),
+                new HashSet<>(),
+                new HashSet<>(),
+                ProductImageMapper.toEntityList(productDto.getImages())
         );
-    }
-
-    public static List<Product> toEntityList(List<ProductDto> productDtos) {
-        return productDtos.stream().map(
-                productDto ->
-                        new Product(
-                                productDto.getId(),
-                                null,
-                                productDto.getName(),
-                                productDto.getDescription(),
-                                new Category(productDto.getCategoryId(), null),
-                                productDto.getQuantity(),
-                                productDto.getPrice()
-                        )
-        ).toList();
     }
 }

@@ -2,10 +2,12 @@ package com.uade.grupo4.backend_ecommerce.service.implementations;
 
 import com.uade.grupo4.backend_ecommerce.controller.dto.UserDto;
 import com.uade.grupo4.backend_ecommerce.controller.dto.UserRegistrationDto;
+import com.uade.grupo4.backend_ecommerce.exception.ValidationException;
+import com.uade.grupo4.backend_ecommerce.repository.Enum.RoleEnum;
 import com.uade.grupo4.backend_ecommerce.repository.UserRepository;
 import com.uade.grupo4.backend_ecommerce.repository.entity.User;
-import com.uade.grupo4.backend_ecommerce.service.interfaces.UserServiceInterface;
 import com.uade.grupo4.backend_ecommerce.repository.mapper.UserMapper;
+import com.uade.grupo4.backend_ecommerce.service.interfaces.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,15 +28,15 @@ public class UserService implements UserServiceInterface {
                 userRegistrationDto.getFirstName() == null || userRegistrationDto.getFirstName().isEmpty() ||
                 userRegistrationDto.getLastName() == null || userRegistrationDto.getLastName().isEmpty()) {
 
-            throw new IllegalArgumentException("There is missed user basic data.");
+            throw new ValidationException("There is missed user basic data.");
         }
 
         if (userRepository.findByEmail(userRegistrationDto.getEmail()).isPresent()) {
-            throw new IllegalStateException("The email is already used.");
+            throw new ValidationException("The email is already used.");
         }
 
         if (userRepository.findByUsername(userRegistrationDto.getUsername()).isPresent()) {
-            throw new IllegalStateException("The username is already taken.");
+            throw new ValidationException("The username is already taken.");
         }
 
         User user = new User();
@@ -45,6 +47,7 @@ public class UserService implements UserServiceInterface {
         user.setBirthDate(userRegistrationDto.getBirthDate());
         user.setFirstName(userRegistrationDto.getFirstName());
         user.setLastName(userRegistrationDto.getLastName());
+        user.setRole(RoleEnum.USER); // siempre van a ser USER, se les cambia a admin por db, a excepcion del primer
 
         userRepository.save(user);
 
@@ -80,6 +83,7 @@ public class UserService implements UserServiceInterface {
         throw new IllegalStateException("User is not authenticated");
     }
 
+    //TODO: this and next one will be refactor to have only 1, which will return User class
     public UserDto getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -88,5 +92,15 @@ public class UserService implements UserServiceInterface {
         }
 
         throw new IllegalStateException("User is not authenticated");
+    }
+
+    public User getLoggedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof User currentUser) {
+            return currentUser;
+        }
+
+        return null;
     }
 }
