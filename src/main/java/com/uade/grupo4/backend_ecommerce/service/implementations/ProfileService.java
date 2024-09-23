@@ -28,16 +28,15 @@ public class ProfileService {
         List<Cart> carts = cartRepository.findAll().stream()
                 .filter(cart -> cart.getUser().getId().equals(user.getId()))
                 .collect(Collectors.toList());
-        ProfileDto miPerfilDto = new ProfileDto(user, carts);
-        return miPerfilDto;
+        return new ProfileDto(user, carts);
     }
 
-    public ProfileDto updateProfile(ProfileDto miPerfilDto) {
+    public ProfileDto updateProfile(ProfileDto profileDto) {
         Long userId = getCurrentUserId();
         User user = userRepository.findById(userId).orElseThrow();
-        user.setFirstName(miPerfilDto.getFirstName());
-        user.setLastName(miPerfilDto.getLastName());
-        user.setEmail(miPerfilDto.getEmail());
+        user.setFirstName(profileDto.getFirstName());
+        user.setLastName(profileDto.getLastName());
+        user.setEmail(profileDto.getEmail());
         userRepository.save(user);
         List<Cart> carts = cartRepository.findAll().stream()
                 .filter(cart -> cart.getUser().getId().equals(user.getId()))
@@ -52,6 +51,6 @@ public class ProfileService {
             return currentUser.getId();
         }
 
-        throw new IllegalStateException("El perfil no esta autenticado");
+        throw new IllegalStateException("El usuario no esta autenticado");
     }
 }

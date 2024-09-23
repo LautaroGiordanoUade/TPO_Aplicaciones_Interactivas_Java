@@ -12,19 +12,19 @@ import org.springframework.web.bind.annotation.*;
 public class ProfileController {
 
     @Autowired
-    private ProfileService miPerfilService;
+    private ProfileService profileService;
 
     @GetMapping
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<ProfileDto> getProfile() {
-        ProfileDto miPerfilDto = miPerfilService.getProfile();
-        return ResponseEntity.ok(miPerfilDto);
+        ProfileDto profileDto = profileService.getProfile();
+        return ResponseEntity.ok(profileDto);
     }
 
     @PatchMapping
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<ProfileDto> updateProfile(@RequestBody ProfileDto miPerfilDto) {
-        ProfileDto updatedMiPerfilDto = miPerfilService.updateProfile(miPerfilDto);
-        return ResponseEntity.ok(updatedMiPerfilDto);
+    public ResponseEntity<ProfileDto> updateProfile(@RequestBody ProfileDto profileDto) {
+        ProfileDto updatedProfile = profileService.updateProfile(profileDto);
+        return ResponseEntity.ok(updatedProfile);
     }
 }
