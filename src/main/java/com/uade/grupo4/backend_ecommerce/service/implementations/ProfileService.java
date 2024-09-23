@@ -5,13 +5,13 @@ import com.uade.grupo4.backend_ecommerce.controller.dto.ProductDto;
 import com.uade.grupo4.backend_ecommerce.controller.dto.ProfileDto;
 import com.uade.grupo4.backend_ecommerce.controller.dto.TransactionDto;
 import com.uade.grupo4.backend_ecommerce.repository.ProfileRepository;
-import com.uade.grupo4.backend_ecommerce.repository.UserRepository;
 import com.uade.grupo4.backend_ecommerce.repository.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProfileService {
@@ -45,10 +45,15 @@ public class ProfileService {
         return transactionDTOs;
     }
 
-    private CartDto convertCartToDTO(Cart cart) {
+    private CartDto convertCartToDTO(CartItem cart) {
+        if (cart == null) {
+            throw new RuntimeException("Carrito no encontrado");
+        }
         CartDto cartDTO = new CartDto();
         cartDTO.setId(cart.getId());
-        cartDTO.setItems(convertProductsToDTO(CartItem.getId()));
+        cartDTO.setItems(convertProductsToDTO(cart.getCartItems().stream()
+                .map(CartItem::getProduct)
+                .collect(Collectors.toList())));
         return cartDTO;
     }
 
