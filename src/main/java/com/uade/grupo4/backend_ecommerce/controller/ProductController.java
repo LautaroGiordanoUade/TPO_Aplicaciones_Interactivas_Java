@@ -26,13 +26,12 @@ public class ProductController {
 
     @PutMapping("/admin")
     public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto) {
-        ProductDto updatedProduct = productService.updateProduct(productDto);
-
-        if (updatedProduct == null) {
+        try {
+            ProductDto updatedProduct = productService.updateProduct(productDto);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
-
-        return ResponseEntity.ok(updatedProduct);
     }
 
     @DeleteMapping("/admin/{id}")
