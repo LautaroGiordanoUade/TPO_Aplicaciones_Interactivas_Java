@@ -3,6 +3,8 @@ package com.uade.grupo4.backend_ecommerce.controller.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class ProductDto {
@@ -12,4 +14,6 @@ public class ProductDto {
     private Long categoryId;
     private int quantity;
     private Long price;
+    private boolean featured;
+    private List<ProductImageDto> images;
 }
