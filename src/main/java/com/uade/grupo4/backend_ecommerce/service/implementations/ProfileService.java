@@ -5,6 +5,7 @@ import com.uade.grupo4.backend_ecommerce.controller.dto.ProductDto;
 import com.uade.grupo4.backend_ecommerce.controller.dto.ProfileDto;
 import com.uade.grupo4.backend_ecommerce.controller.dto.TransactionDto;
 import com.uade.grupo4.backend_ecommerce.repository.ProfileRepository;
+import com.uade.grupo4.backend_ecommerce.repository.TransactionRepository;
 import com.uade.grupo4.backend_ecommerce.repository.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,11 @@ public class ProfileService {
         return profileDTO;
     }
 
+    private List<TransactionDto> getTransactionsForProfile(Long profileId) {
+        List<Transaction> transactions = TransactionRepository.findByProfileId(profileId);
+        return convertTransactionsToDTO(transactions);
+    }
+
     private List<TransactionDto> convertTransactionsToDTO(List<Transaction> transactions) {
         List<TransactionDto> transactionDTOs = new ArrayList<>();
         for (Transaction transaction : transactions) {
@@ -51,7 +57,7 @@ public class ProfileService {
         }
         CartDto cartDTO = new CartDto();
         cartDTO.setId(cart.getId());
-        cartDTO.setItems(convertProductsToDTO(cart.getCartItems().stream()
+        cartDTO.setItems(convertProductsToDTO(cart.getCartItem().stream()
                 .map(CartItem::getProduct)
                 .collect(Collectors.toList())));
         return cartDTO;
@@ -61,7 +67,7 @@ public class ProfileService {
         List<ProductDto> productDTOs = new ArrayList<>();
         for (Product product : products) {
             ProductDto productDTO = new ProductDto();
-            productDTO.setId(product.getId());
+            productDTO.setId(product.getid());
             productDTO.setName(product.getName());
             productDTO.setDescription(product.getDescription());
             productDTO.setPrice(product.getPrice());
