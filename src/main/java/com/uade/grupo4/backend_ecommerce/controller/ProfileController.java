@@ -3,41 +3,35 @@ package com.uade.grupo4.backend_ecommerce.controller;
 // ProfileController.java
 
 import com.uade.grupo4.backend_ecommerce.controller.dto.ProfileDto;
-import com.uade.grupo4.backend_ecommerce.repository.entity.User;
+import com.uade.grupo4.backend_ecommerce.controller.dto.UserDto;
 import com.uade.grupo4.backend_ecommerce.service.implementations.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/profile")
 public class ProfileController {
 
-    private final UserService userService;
-
     @Autowired
-    public ProfileController(UserService userService) {
-        this.userService = userService;
+    private UserService userService;
+
+    @GetMapping("/{userId}")
+    public ProfileDto getProfile(@PathVariable Long userId) {
+        UserDto userDto = userService.getUserById(userId);
+        return new ProfileDto(userDto.getId(), userDto.getUsername(), userDto.getEmail(), userDto.getFirstName(), userDto.getLastName());
     }
 
-    @GetMapping("/profile/{userId}")
-    public ProfileDto getProfile(@PathVariable Long userId) {
-        User user = userService.getUserById(userId);
-        if (user != null) {
-            ProfileDto profileDTO = new ProfileDto();
-            profileDTO.setUserId(user.getId());
-            profileDTO.setUsername(user.getname());
-            profileDTO.setUserEmail(user.getEmail());
-            profileDTO.setPassword(user.getPassword());
-            profileDTO.setBirthDate(usergetBirthDate());
-            profileDTO.setFirstName(user.getFirstName());
-            profileDTO.setLastName(user.getLastName());
+    @GetMapping("/current")
+    public ProfileDto getCurrentProfile() {
+        UserDto userDto = userService.getCurrentUser();
+        return new ProfileDto(userDto.getId(), userDto.getUsername(), userDto.getEmail(), userDto.getFirstName(), userDto.getLastName());
+    }
 
-            return profileDTO;
-        } else {
-            throw new RuntimeException("Perfil no encontrado");
-        }
+    @PutMapping("/{userId}")
+    public ProfileDto updateProfile(@PathVariable Long userId, @RequestBody ProfileDto profileDto) {
+        UserDto userDto = userService.updateUser(userId, profileDto);
+        return new ProfileDto(userDto.getId(), userDto.getUsername(), userDto.getEmail(), userDto.getFirstName(), userDto.getLastName());
     }
 }
