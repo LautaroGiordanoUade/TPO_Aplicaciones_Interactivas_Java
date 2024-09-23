@@ -8,8 +8,10 @@ import com.uade.grupo4.backend_ecommerce.repository.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProfileService {
@@ -23,7 +25,9 @@ public class ProfileService {
     public ProfileDto getProfile() {
         Long userId = getCurrentUserId();
         User user = userRepository.findById(userId).orElseThrow();
-        List<Cart> carts = cartRepository.findByUser(user);
+        List<Cart> carts = cartRepository.findAll().stream()
+                .filter(cart -> cart.getUser().getId().equals(user.getId()))
+                .collect(Collectors.toList());
         ProfileDto miPerfilDto = new ProfileDto(user, carts);
         return miPerfilDto;
     }
@@ -35,7 +39,10 @@ public class ProfileService {
         user.setLastName(miPerfilDto.getLastName());
         user.setEmail(miPerfilDto.getEmail());
         userRepository.save(user);
-        return new ProfileDto(user, cartRepository.findByUser(user));
+        List<Cart> carts = cartRepository.findAll().stream()
+                .filter(cart -> cart.getUser().getId().equals(user.getId()))
+                .collect(Collectors.toList());
+        return new ProfileDto(user, carts);
     }
 
     private Long getCurrentUserId() {
@@ -45,6 +52,6 @@ public class ProfileService {
             return currentUser.getId();
         }
 
-        throw new IllegalStateException("El usuario no esta autenticado");
+        throw new IllegalStateException("El perfil no esta autenticado");
     }
 }
