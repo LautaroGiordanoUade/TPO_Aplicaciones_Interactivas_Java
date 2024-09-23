@@ -51,7 +51,7 @@ public class CartItem {
         this.product = product;
     }
 */
-    public int getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
