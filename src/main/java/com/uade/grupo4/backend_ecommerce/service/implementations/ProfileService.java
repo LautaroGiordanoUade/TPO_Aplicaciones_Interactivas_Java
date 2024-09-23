@@ -57,9 +57,7 @@ public class ProfileService {
         }
         CartDto cartDTO = new CartDto();
         cartDTO.setId(cart.getId());
-        cartDTO.setItems(convertProductsToDTO(cart.getCartItem().stream()
-                .map(CartItem::getProduct)
-                .collect(Collectors.toList())));
+        cartDTO.setItems(convertProductsToDTO(cart.getItems())); // Cambio aquí
         return cartDTO;
     }
 
@@ -67,7 +65,7 @@ public class ProfileService {
         List<ProductDto> productDTOs = new ArrayList<>();
         for (Product product : products) {
             ProductDto productDTO = new ProductDto();
-            productDTO.setId(product.getid());
+            productDTO.setId(product.getId());
             productDTO.setName(product.getName());
             productDTO.setDescription(product.getDescription());
             productDTO.setPrice(product.getPrice());

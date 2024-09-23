@@ -3,7 +3,6 @@ package com.uade.grupo4.backend_ecommerce.repository.entity;
 import jakarta.persistence.*;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 public class Transaction {
