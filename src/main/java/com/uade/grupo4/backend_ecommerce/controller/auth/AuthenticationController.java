@@ -15,6 +15,7 @@ public class AuthenticationController {
 
     private final AuthService service;
 
+    //todo will be deprecated when first admin(app) user is created
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request) {
