@@ -154,7 +154,6 @@ public class CartService implements CartServiceInterface {
 
         }
 
-
         cart.setCheckoutDate(new Date());
         cartRepository.save(cart);
         return cart.getTotal();
