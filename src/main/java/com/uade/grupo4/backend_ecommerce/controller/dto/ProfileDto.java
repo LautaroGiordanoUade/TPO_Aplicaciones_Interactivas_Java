@@ -1,51 +1,35 @@
 package com.uade.grupo4.backend_ecommerce.controller.dto;
 
-import java.util.List;
+import com.uade.grupo4.backend_ecommerce.repository.entity.Cart;
+import com.uade.grupo4.backend_ecommerce.repository.entity.User;
+import com.uade.grupo4.backend_ecommerce.repository.mapper.CartItemMapper;
+import com.uade.grupo4.backend_ecommerce.repository.mapper.CartMapper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProfileDto {
     private Long id;
-    private String name;
-    private String lastName;
+    private String username;
     private String email;
-    private List<TransactionDto> transactions;
+    private String firstName;
+    private String lastName;
+    private List<CartDto> carts;
 
-    public String getName() {
-        return name;
+         public ProfileDto(User user, List<Cart> carts) {
+            this.id = user.getId();
+            this.username = user.getUsername();
+            this.email = user.getEmail();
+            this.firstName = user.getFirstName();
+            this.lastName = user.getLastName();
+            this.carts = carts.stream()
+                    .map(CartMapper::toDTO)
+                    .collect(Collectors.toList());
+        }
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public List<TransactionDto> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(List<TransactionDto> transactions) {
-        this.transactions = transactions;
-    }
-}
