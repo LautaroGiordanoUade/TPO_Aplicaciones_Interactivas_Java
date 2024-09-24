@@ -1,8 +1,10 @@
 package com.uade.grupo4.backend_ecommerce.controller;
 
+import com.uade.grupo4.backend_ecommerce.exception.NotOwnerException;
 import com.uade.grupo4.backend_ecommerce.exception.ResourceNotFoundException;
-import com.uade.grupo4.backend_ecommerce.service.implementations.ProductService;
 import com.uade.grupo4.backend_ecommerce.controller.dto.ProductDto;
+import com.uade.grupo4.backend_ecommerce.exception.ValidationException;
+import com.uade.grupo4.backend_ecommerce.service.interfaces.ProductServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,28 +18,42 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    ProductService productService;
+    ProductServiceInterface productService;
 
     @PostMapping("/admin")
-    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
-        ProductDto createdProduct = productService.saveProduct(productDto);
-        return ResponseEntity.created(URI.create("/api/v1/product/" + createdProduct.getId())).body(createdProduct);
+    public ResponseEntity<?> createProduct(@RequestBody ProductDto productDto) {
+        try {
+            ProductDto createdProduct = productService.saveProduct(productDto);
+            return ResponseEntity.created(URI.create("/api/v1/product/" + createdProduct.getId())).body(createdProduct);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PutMapping("/admin")
-    public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto) {
+    public ResponseEntity<?> updateProduct(@RequestBody ProductDto productDto) {
         try {
             ProductDto updatedProduct = productService.updateProduct(productDto);
             return ResponseEntity.ok(updatedProduct);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (ValidationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (NotOwnerException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
 
     @DeleteMapping("/admin/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (NotOwnerException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
     }
 
     @GetMapping
