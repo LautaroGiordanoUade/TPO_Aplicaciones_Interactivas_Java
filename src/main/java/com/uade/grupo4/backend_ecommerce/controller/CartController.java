@@ -2,8 +2,18 @@ package com.uade.grupo4.backend_ecommerce.controller;
 
 
 
+import com.uade.grupo4.backend_ecommerce.controller.dto.CartDto;
+import com.uade.grupo4.backend_ecommerce.controller.dto.ProductCartDTO;
+import com.uade.grupo4.backend_ecommerce.controller.dto.UserDto;
+import com.uade.grupo4.backend_ecommerce.exception.*;
+import com.uade.grupo4.backend_ecommerce.repository.entity.User;
+import com.uade.grupo4.backend_ecommerce.repository.mapper.UserMapper;
 import com.uade.grupo4.backend_ecommerce.service.implementations.CartService;
+import com.uade.grupo4.backend_ecommerce.service.implementations.UserService;
+import com.uade.grupo4.backend_ecommerce.service.interfaces.CartServiceInterface;
+import com.uade.grupo4.backend_ecommerce.service.interfaces.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,32 +23,55 @@ public class CartController {
 
 
     @Autowired
-    private CartService cartService;
+    private CartServiceInterface cartService;
+    @Autowired
+    private UserService userService;
 
 
-    @PostMapping("/{cartId}/add")
-    public ResponseEntity<Object> addProductToCart(@PathVariable Long carritoId, @RequestBody Long productId, @RequestBody int quantity){
-        cartService.addProductToCart(carritoId,productId,quantity);
-        return ResponseEntity.ok("El producto se ha agregado correctamente");
+
+    @PostMapping("/add")
+    public ResponseEntity<Object> addProductToCart(@RequestBody ProductCartDTO productCartDTO){
+        try {
+            User user=userService.getLoggedUser();
+            cartService.addProductToCart(productCartDTO.getProductId(),productCartDTO.getQuantity(), user);
+            return ResponseEntity.ok("El producto se ha agregado correctamente");
+        }catch(NewProductOutOfStockException | ProductInCartOutOfStockException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
-    @DeleteMapping("/{cartId}/remove")
-    public ResponseEntity<Object> removeProductFromCart(@PathVariable Long carritoId, @RequestBody Long productId,@RequestBody int quantity) throws Exception {
-        cartService.removeProductFromCart(carritoId, productId,quantity);
-        return ResponseEntity.ok("El producto se ha eliminado correctamente");
+    @DeleteMapping("/remove")
+    public ResponseEntity<String> deleteProductFromCart(@RequestBody ProductCartDTO productCartDTO) throws Exception {
+        try{
+            User user=userService.getLoggedUser();
+            cartService.removeProductFromCart(productCartDTO.getProductId(),productCartDTO.getQuantity(), user);
+            return ResponseEntity.ok("El producto se ha eliminado correctamente");
+        }catch (NegativeCartException | ProductRemovalFromCartException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
     }
 
-    @DeleteMapping("/{cartId}/empty")
-    public ResponseEntity<Object> emptyCart(@PathVariable Long carritoId) {
-        cartService.emptyCart(carritoId);
-        return ResponseEntity.ok("El carrito se ha vaciado correctamente");
+    @DeleteMapping("/empty")
+    public ResponseEntity<Object> emptyCart() {
+        try {
+            User user=userService.getLoggedUser();
+            cartService.emptyCart(user);
+            return ResponseEntity.ok("El carrito se ha vaciado correctamente");
+        }catch (CartWasEmptyPreviouslyException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
-
-    @PostMapping("/{cartId}/checkout")
-    public ResponseEntity<Float> checkoutCart(@PathVariable Long carritoId){
-        float total = cartService.checkoutCart(carritoId);
-        return ResponseEntity.ok(total);
+    @PostMapping("/checkout")
+    public ResponseEntity<Object> checkoutCart(){
+        try {
+            User user=userService.getLoggedUser();
+            float total = cartService.checkoutCart(user);
+            return ResponseEntity.ok("El carrito tiene un total de "+total);
+        }catch (EmptyCartException | ProductOutOfStockException e ){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
 
