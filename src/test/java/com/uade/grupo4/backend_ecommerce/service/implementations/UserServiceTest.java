@@ -1,11 +1,10 @@
-package com.uade.grupo4.backend_ecommerce.uade.grupo4.backend_ecommerce;
+package com.uade.grupo4.backend_ecommerce.service.implementations;
 
 import com.uade.grupo4.backend_ecommerce.controller.dto.UserDto;
 import com.uade.grupo4.backend_ecommerce.controller.dto.UserRegistrationDto;
 import com.uade.grupo4.backend_ecommerce.exception.ValidationException;
 import com.uade.grupo4.backend_ecommerce.repository.UserRepository;
 import com.uade.grupo4.backend_ecommerce.repository.entity.User;
-import com.uade.grupo4.backend_ecommerce.service.implementations.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
