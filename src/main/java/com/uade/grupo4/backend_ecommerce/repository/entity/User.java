@@ -20,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "users")
+@Table(name = "user")
 @Data
 public class User implements UserDetails {
 
@@ -46,5 +46,14 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+    @Override //used by auth library
+    public String getUsername() {
+        return this.email;
+    }
+
+    //use by common
+    public String getUserName() {
+        return this.username;
     }
 }
