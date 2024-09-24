@@ -18,7 +18,6 @@ public class UserController {
 
 
     @PostMapping("/register")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDto userRegistrationDto) {
         try {
             UserDto registeredUser = userService.registerUser(userRegistrationDto);
@@ -28,12 +27,12 @@ public class UserController {
                 return ResponseEntity.badRequest().body("Registration failed. User data is invalid.");
             }
         } catch (ValidationException e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     //TODO: it will be used on front end feature
-    @PatchMapping("/{userId}")
+    @PatchMapping("/admin/{userId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) throws Exception {
         UserDto updatedUser = userService.updateUser(userId, userDto);
@@ -41,7 +40,7 @@ public class UserController {
     }
 
     //TODO: it will be used on front end feature
-    @GetMapping("/{userId}")
+    @GetMapping("/admin/{userId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UserDto> getUserById(@PathVariable long userId) throws Exception {
         UserDto user = userService.getUserById(userId);
