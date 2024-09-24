@@ -40,18 +40,16 @@ public class CartService implements CartServiceInterface {
 
 
     public CartDto addProductToCart(Long productId, int quantity,User user) {
-        Cart cart=cartRepository.findByUser(user).orElse(null);
+        Product product = productRepository.findById(productId).orElseThrow(()->new ResourceNotFoundException("No existe el producto"));
+        Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
 
         if (cart == null ){
             cart=new Cart();
             cart.setUser(user);
             cart.setItems(new ArrayList<CartItem>());
             cartRepository.save(cart);
-        }else if (cart.getCheckoutDate() != null) {
-            cart.setCheckoutDate(null);
-            cart.setTotal(0);
         }
-        Product product = productRepository.findById(productId).orElseThrow();
+
         CartItem existingItem= cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
         if (existingItem != null) {
             if (product.getQuantity() <(existingItem.getQuantity() + quantity)){
@@ -153,11 +151,10 @@ public class CartService implements CartServiceInterface {
             }
             product.setQuantity(product.getQuantity() - quantity);
             productRepository.save(product);
-            cart.getItems().remove(item);
 
         }
-        cartItemRepository.deleteAll(cartItems);
-        cart.setItems(new ArrayList<>());
+
+
         cart.setCheckoutDate(new Date());
         cartRepository.save(cart);
         return cart.getTotal();
