@@ -80,14 +80,23 @@ public class UserService implements UserServiceInterface {
     public UserDto updateUser(Long id, UserDto userDto) throws Exception {
         User user = userRepository.findById(id).orElseThrow(() -> new Exception("User not found"));
 
-        if (userDto.getUsername() == null || userDto.getUsername().isEmpty() ||
-                userDto.getEmail() == null || userDto.getEmail().isEmpty() ||
-                userDto.getPassword() == null || userDto.getPassword().isEmpty() ||
-                userDto.getFirstName() == null || userDto.getFirstName().isEmpty() ||
-                userDto.getLastName() == null || userDto.getLastName().isEmpty()) {
-
-            throw new ValidationException("There is missed user basic data.");
+        // ESta validacion es para solo los campos que no son nulos o vacíos en el UserDto recibido
+        if (userDto.getUsername() != null && !userDto.getUsername().isEmpty()) {
+            user.setUsername(userDto.getUsername());
         }
+
+        if (userDto.getEmail() != null && !userDto.getEmail().isEmpty()) {
+            user.setEmail(userDto.getEmail());
+        }
+
+        if (userDto.getFirstName() != null && !userDto.getFirstName().isEmpty()) {
+            user.setFirstName(userDto.getFirstName());
+        }
+
+        if (userDto.getLastName() != null && !userDto.getLastName().isEmpty()) {
+            user.setLastName(userDto.getLastName());
+        }
+
 
         // Solo permitir al admin actualizar los datos del usuario
         user.setUsername(userDto.getUsername());
