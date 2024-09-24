@@ -22,14 +22,18 @@ public class ProfileService {
     @Autowired
     private CartRepository cartRepository;
 
-    public ProfileDto getProfile() {
-        Long userId = getCurrentUserId();
-        User user = userRepository.findById(userId).orElseThrow();
+    public ProfileDto getProfile() { //representa el perfil del usuario
+        Long userId = getCurrentUserId(); //obtengo ID del usuario
+        User user = userRepository.findById(userId).orElseThrow(); //
         List<Cart> carts = cartRepository.findAll().stream()
-                .filter(cart -> cart.getUser().getId().equals(user.getId()))
+                //filtra los objetos Cart para solo incluir
+                //los que tiene el usuario actual y tienen una fecha de checkout no nula.
+                .filter(cart -> cart.getUser().getId().equals(user.getId()) && cart.getCheckoutDate() != null)
                 .collect(Collectors.toList());
         return new ProfileDto(user, carts);
     }
+//para cada cart, obtener el User asociado a ese cart
+//y luego obtener el Id de ese User, y verificar si ese Id es igual al Id del usuario actual
 
     public ProfileDto updateProfile(ProfileDto profileDto) {
         Long userId = getCurrentUserId();
@@ -56,3 +60,5 @@ public class ProfileService {
         throw new IllegalStateException("El usuario no esta autenticado");
     }
 }
+
+
