@@ -174,7 +174,7 @@ public class ProductService implements ProductServiceInterface {
             throw new ValidationException("Ingrese una categoría para el producto.");
         }
         categoryRepository.findById(productDto.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la categoría."));
+                .orElseThrow(() -> new ValidationException("No se encontró la categoría."));
 
         if(productDto.getImages() == null || productDto.getImages().isEmpty()) {
             throw new ValidationException("Ingrese al menos una imagen para el producto.");
@@ -187,13 +187,6 @@ public class ProductService implements ProductServiceInterface {
         }
 
         validateOwnership(productDto.getId(), "El producto solo puede ser editado por el usuario que lo creo.");
-        /*Product product = productRepository.findById(productDto.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró el producto."));
-
-        Long userId = userService.getCurrentUserId();
-        if (!Objects.equals(product.getUser().getId(), userId)) {
-            throw new NotOwnerException("El producto solo puede ser editado por el usuario que lo creo.");
-        }*/
 
         validateProduct(productDto);
     }

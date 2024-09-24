@@ -25,7 +25,7 @@ public class ProductController {
         try {
             ProductDto createdProduct = productService.saveProduct(productDto);
             return ResponseEntity.created(URI.create("/api/v1/product/" + createdProduct.getId())).body(createdProduct);
-        } catch (ValidationException | ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
@@ -37,6 +37,8 @@ public class ProductController {
             return ResponseEntity.ok(updatedProduct);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (ValidationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (NotOwnerException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
