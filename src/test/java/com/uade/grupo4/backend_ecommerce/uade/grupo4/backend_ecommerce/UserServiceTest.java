@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -26,6 +27,9 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -37,7 +41,9 @@ public class UserServiceTest {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
-        // Crea un DTO de registro con todos los datos requeridos
+        // Con esto simulo el comportamiento del PasswordEncoder
+        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+
         UserRegistrationDto registrationDto = new UserRegistrationDto();
         registrationDto.setUsername("testuser");
         registrationDto.setEmail("test@example.com");
@@ -49,11 +55,10 @@ public class UserServiceTest {
         // Simula el comportamiento de guardar el usuario y asignar un ID
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
             User user = invocation.getArgument(0);
-            user.setId(1L); // Asigna un ID manualmente después de "guardar"
+            user.setId(1L); // Asigno un ID manualmente después de "guardar" si no da error
             return user;
         });
 
-        // Ejecuta el método registerUser del servicio
         UserDto result = userService.registerUser(registrationDto);
 
         // Verifica que el usuario se creó correctamente y el ID no es nulo
