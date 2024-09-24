@@ -40,18 +40,16 @@ public class CartService implements CartServiceInterface {
 
 
     public CartDto addProductToCart(Long productId, int quantity,User user) {
-        Cart cart=cartRepository.findByUser(user).orElse(null);
+        Product product = productRepository.findById(productId).orElseThrow(()->new ResourceNotFoundException("No existe el producto"));
+        Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
 
         if (cart == null ){
             cart=new Cart();
             cart.setUser(user);
             cart.setItems(new ArrayList<CartItem>());
             cartRepository.save(cart);
-        }else if (cart.getCheckoutDate() != null) {
-            cart.setCheckoutDate(null);
-            cart.setTotal(0);
         }
-        Product product = productRepository.findById(productId).orElseThrow();
+
         CartItem existingItem= cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
         if (existingItem != null) {
             if (product.getQuantity() <(existingItem.getQuantity() + quantity)){
@@ -82,10 +80,11 @@ public class CartService implements CartServiceInterface {
 
 
     public CartDto removeProductFromCart(Long productId, int quantity,User user)  {
+        Product product = productRepository.findById(productId).orElseThrow(()->new ResourceNotFoundException("No existe el producto"));
         Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
 
         CartItem cartItem= cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
-        Product product = productRepository.findById(productId).orElseThrow();
+
 
         if (cartItem != null) {
             int newQuantity = cartItem.getQuantity() - quantity;
@@ -113,18 +112,13 @@ public class CartService implements CartServiceInterface {
     public boolean emptyCart(User user) {
         Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
         if (cart == null){
-            throw new CartWasEmptyPreviouslyException("El carrito ya estaba vacio");
+            throw new CartWasEmptyPreviouslyException("El carrito se encuentra vacio");
         }
         List<CartItem> cartItems = cart.getItems().stream().toList();
         if(cartItems.isEmpty()){
             throw new CartWasEmptyPreviouslyException("El carrito ya estaba vacio");
         }
         for (CartItem item : cartItems) {
-            Long productId = item.getProduct().getId();
-            int quantity = item.getQuantity();
-            Product product = productRepository.findById(productId).orElseThrow();
-            product.setQuantity(product.getQuantity() + quantity);
-            productRepository.save(product);
             cart.getItems().remove(item);
         }
         cartItemRepository.deleteAll(cartItems);
@@ -137,7 +131,7 @@ public class CartService implements CartServiceInterface {
     public float checkoutCart(User user) {
         Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
         if (cart == null){
-            throw new EmptyCartException("No hay items en el carrito");
+            throw new EmptyCartException("El carrito se encuentra vacio");
         }
         List<CartItem> cartItems = cart.getItems().stream().toList();
         if(cartItems.isEmpty()){
@@ -149,15 +143,13 @@ public class CartService implements CartServiceInterface {
             Product product = productRepository.findById(productId).orElseThrow();
 
             if (product.getQuantity() < quantity) {
-                throw new ProductOutOfStockException("No hay Stock disponible para el producto"+item.getProduct().getName());
+                throw new ProductOutOfStockException("No hay Stock disponible para el producto: "+item.getProduct().getName());
             }
             product.setQuantity(product.getQuantity() - quantity);
             productRepository.save(product);
-            cart.getItems().remove(item);
 
         }
-        cartItemRepository.deleteAll(cartItems);
-        cart.setItems(new ArrayList<>());
+
         cart.setCheckoutDate(new Date());
         cartRepository.save(cart);
         return cart.getTotal();
