@@ -14,6 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.regex.Pattern;
+
 @Service
 public class UserService implements UserServiceInterface {
 
@@ -38,6 +42,16 @@ public class UserService implements UserServiceInterface {
         if (userRepository.findByEmail(userRegistrationDto.getEmail()).isPresent()) {
             throw new ValidationException("The email is already used.");
         }
+
+        if (!isValidEmail(userRegistrationDto.getEmail())) {
+            throw new ValidationException("Invalid email format.");
+        }
+
+        // maximo de edad 100 años
+        if (isOlderThan(userRegistrationDto.getBirthDate())) {
+            throw new ValidationException("User cannot be older than 100 years.");
+        }
+
 
         if (userRepository.findByUsername(userRegistrationDto.getUsername()).isPresent()) {
             throw new ValidationException("The username is already taken.");
@@ -66,6 +80,15 @@ public class UserService implements UserServiceInterface {
     public UserDto updateUser(Long id, UserDto userDto) throws Exception {
         User user = userRepository.findById(id).orElseThrow(() -> new Exception("User not found"));
 
+        if (userDto.getUsername() == null || userDto.getUsername().isEmpty() ||
+                userDto.getEmail() == null || userDto.getEmail().isEmpty() ||
+                userDto.getPassword() == null || userDto.getPassword().isEmpty() ||
+                userDto.getFirstName() == null || userDto.getFirstName().isEmpty() ||
+                userDto.getLastName() == null || userDto.getLastName().isEmpty()) {
+
+            throw new ValidationException("There is missed user basic data.");
+        }
+
         // Solo permitir al admin actualizar los datos del usuario
         user.setUsername(userDto.getUsername());
         user.setEmail(userDto.getEmail());
@@ -73,7 +96,7 @@ public class UserService implements UserServiceInterface {
         user.setLastName(userDto.getLastName());
 
         userRepository.save(user);
-        return new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getFirstName(), user.getLastName());
+        return new UserDto(user.getId(), user.getUserName(), user.getEmail(), user.getFirstName(), user.getLastName());
     }
 
     public long getCurrentUserId() {
@@ -105,5 +128,17 @@ public class UserService implements UserServiceInterface {
         }
 
         return null;
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        return pattern.matcher(email).matches();
+    }
+
+    // Valida si la persona es mayor de 100 años (seteable)
+    private boolean isOlderThan(LocalDate birthDate) {
+        LocalDate currentDate = LocalDate.now();
+        return Period.between(birthDate, currentDate).getYears() > 100;
     }
 }
