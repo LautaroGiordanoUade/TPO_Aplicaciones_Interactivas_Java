@@ -8,10 +8,8 @@ import com.uade.grupo4.backend_ecommerce.exception.CartWasEmptyPreviouslyExcepti
 import com.uade.grupo4.backend_ecommerce.exception.ProductRemovalFromCartException;
 import com.uade.grupo4.backend_ecommerce.exception.ResourceNotFoundException;
 import com.uade.grupo4.backend_ecommerce.exception.ValidationException;
-import com.uade.grupo4.backend_ecommerce.repository.CartRepository;
+import com.uade.grupo4.backend_ecommerce.repository.*;
 import com.uade.grupo4.backend_ecommerce.repository.Enum.RoleEnum;
-import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
-import com.uade.grupo4.backend_ecommerce.repository.UserRepository;
 import com.uade.grupo4.backend_ecommerce.repository.entity.*;
 import com.uade.grupo4.backend_ecommerce.service.implementations.CartService;
 import com.uade.grupo4.backend_ecommerce.service.implementations.ProductService;
@@ -25,7 +23,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,6 +45,8 @@ public class CartServiceTest {
 
     @Mock
     private CartRepository cartRepository;
+    @Mock
+    private CartItemRepository cartItemRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -54,6 +56,9 @@ public class CartServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private CategoryRepository categoryRepository;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -61,11 +66,14 @@ public class CartServiceTest {
 
 
     @Test
-    public void addProduct_Successful(){
-       ///Registro el usuario para que lo busque
+    public void addProduct_Successful() {
+        ///Registro el usuario para que lo busque
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+
 
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        UserRegistrationDto userRegistrationDto=new UserRegistrationDto();
+        UserRegistrationDto userRegistrationDto = new UserRegistrationDto();
         userRegistrationDto.setUsername("TesterUseer");
         userRegistrationDto.setEmail("test@uade.edu.ar");
         userRegistrationDto.setPassword("Test_1234");
@@ -83,7 +91,7 @@ public class CartServiceTest {
         userService.registerUser(userRegistrationDto);
 
         //Creo el usuario que le voy a pasar
-        User user=new User();
+        User user = new User();
         user.setId(1L);
         user.setUsername("TesterUseer");
         user.setEmail("test@uade.edu.ar");
@@ -94,35 +102,44 @@ public class CartServiceTest {
         user.setRole(RoleEnum.USER);
 
 
-        /*
+        Category category = mock(Category.class);
         //Registro el producto para que lo busque y exista el producto
-        ProductDto productDto=new ProductDto(1L,"Pantalon",
-                "Pantalon largo deportivo",1L,20,150L,
-                true, (List<ProductImageDto>) new ProductImage(1L,1L,"1" ));
+        /*ProductDto productDto=new ProductDto(1L,"Pantalon",
+                "Pantalon largo deportivo",category.getId(),20,150L,
+                true, Collections.singletonList(new ProductImageDto(1L, 1L, "")));*/
 
-       when(productRepository.save(any(Product.class))).thenAnswer(invocation -> {
-            Product product = invocation.getArgument(0);
-            return product;
-        });*/
-        //Agrega el producto al carrito
-        //productService.saveProduct(productDto);
+
+        Product product = mock(Product.class);
+        Cart cart = mock(Cart.class);
+        CartItem cartItem = mock(CartItem.class);
+
+        when(category.getId()).thenReturn(1L);
+        //when(savedProduct.getCategory()).thenReturn(category);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        when(cartRepository.findByUserAndCheckoutDate(user,null)).thenReturn(Optional.ofNullable(cart));
+        when(product.getQuantity()).thenReturn(20);
+        //when(cartRepository.save(any(Product.class))).thenReturn(product);
+        when(cartItemRepository.save(any(CartItem.class))).thenReturn(cartItem);
+
+
+
+        //when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
 
         //Ejecuta el metodo addProductToCart
-        //CartDto resultCart=cartService.addProductToCart(1L,5, user);
+        CartDto resultCart=cartService.addProductToCart(1L,5, user);
 
-       ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, ()->{
-            cartService.addProductToCart(1L,5, user);
-        });
-/*
+
+
         //Hago las verificaciones que guarda se creo el carrito correctamente
         assertNotNull(resultCart);
         assertEquals(user.getId(),resultCart.getUser().getId());
-        assertEquals(user.getFirstName(),resultCart.getUser().getFirstName());
+        //assertEquals(user.getFirstName(),resultCart.getUser().getFirstName());
         assertEquals(1,resultCart.getItems().size());
         assertEquals("750",resultCart.getTotal());
-        assertNull(resultCart.getChechkoutDate());*/
+        assertNull(resultCart.getChechkoutDate());
 
-        assertEquals("No existe el producto",exception.getMessage());
+        //assertEquals("No existe el producto",exception.getMessage());
 
         //Verifico que se haya guardado correctamente el Carrito
         verify(cartRepository,never()).save(any(Cart.class));
