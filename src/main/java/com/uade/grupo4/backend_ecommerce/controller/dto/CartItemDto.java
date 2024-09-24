@@ -3,13 +3,12 @@ package com.uade.grupo4.backend_ecommerce.controller.dto;
 
 public class CartItemDto {
     private Long id;
-    private CartDto cart;
+
     private ProductDto product;
     private String quantity;
 
-    public CartItemDto(Long id, CartDto cart, ProductDto product, String quantity) {
+    public CartItemDto(Long id, ProductDto product, String quantity) {
         this.id = id;
-        this.cart = cart;
         this.product = product;
         this.quantity = quantity;
     }
@@ -24,13 +23,6 @@ public class CartItemDto {
         this.id = id;
     }
 
-    public CartDto getCart() {
-        return cart;
-    }
-
-    public void setCart(CartDto cart) {
-        this.cart = cart;
-    }
 
     public ProductDto getProduct() {
         return product;
