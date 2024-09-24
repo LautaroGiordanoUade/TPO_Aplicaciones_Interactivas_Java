@@ -11,6 +11,7 @@ import com.uade.grupo4.backend_ecommerce.service.interfaces.UserServiceInterface
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +19,9 @@ public class UserService implements UserServiceInterface {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UserDto registerUser(UserRegistrationDto userRegistrationDto) {
 
@@ -43,7 +47,7 @@ public class UserService implements UserServiceInterface {
 
         user.setUsername(userRegistrationDto.getUsername());
         user.setEmail(userRegistrationDto.getEmail());
-        user.setPassword(userRegistrationDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userRegistrationDto.getPassword()));
         user.setBirthDate(userRegistrationDto.getBirthDate());
         user.setFirstName(userRegistrationDto.getFirstName());
         user.setLastName(userRegistrationDto.getLastName());
@@ -51,11 +55,10 @@ public class UserService implements UserServiceInterface {
 
         userRepository.save(user);
 
-        return new UserDto(user.getId(),user.getUsername(), user.getEmail(), user.getFirstName(), user.getLastName());
+        return new UserDto(user.getId(),user.getUserName(), user.getEmail(), user.getFirstName(), user.getLastName());
     }
 
     public UserDto getUserById(Long id) throws Exception {
-        var userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findById(id).orElseThrow(() -> new Exception("An error has happened"));
         return new UserDto(user.getId(), user.getUsername(), user.getEmail(),user.getFirstName(),user.getLastName());
     }
