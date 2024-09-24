@@ -37,7 +37,7 @@ public class UserServiceTest {
 
     @Test
     public void registerUser_Successful() {
-        //no existe un usuario con el mismo email o username
+        //me asegura que cuando simulo userrepo no tengo esos problemas de validaciones, optiona.empty
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
@@ -75,10 +75,8 @@ public class UserServiceTest {
 
     @Test
     public void registerUser_EmailAlreadyExists() {
-        // Simular que ya existe un usuario con el mismo email
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(new User()));
 
-        // Crear un objeto DTO para el registro
         UserRegistrationDto registrationDto = new UserRegistrationDto();
         registrationDto.setUsername("testuser");
         registrationDto.setEmail("test@example.com");
@@ -87,7 +85,7 @@ public class UserServiceTest {
         registrationDto.setLastName("User");
         registrationDto.setBirthDate(LocalDate.now());
 
-        // Ejecutar el registro y esperar una excepción
+        // Ejecuto el registro y esperar una excepción
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userService.registerUser(registrationDto);
         });
@@ -110,7 +108,7 @@ public class UserServiceTest {
         registrationDto.setBirthDate(LocalDate.now());
 
 
-        //esperar una excepción
+        //espero una excepción
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             userService.registerUser(registrationDto);
         });
@@ -121,7 +119,7 @@ public class UserServiceTest {
 
     @Test
     public void registerUser_MissingData() {
-        // Crear un objeto DTO sin todos los campos necesarios
+        // Crear un objeto DTO sin todos los campos necesarios para q falle
         UserRegistrationDto registrationDto = new UserRegistrationDto();
         registrationDto.setEmail("test@example.com"); // Falta username, password, etc.
 
