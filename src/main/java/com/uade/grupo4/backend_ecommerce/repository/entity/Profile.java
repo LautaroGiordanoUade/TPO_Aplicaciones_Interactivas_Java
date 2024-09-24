@@ -11,9 +11,7 @@ public class Profile {
     private String email;
     private Long id;
 
-    //relación entre la entidad Profile y la entidad Transaction
-    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
-    private List<Transaction> transactions;
+
 
     public Profile(String lastName, String firstName, String email) {
         this.lastName = lastName;
@@ -53,11 +51,4 @@ public class Profile {
         this.id = id;
     }
 
-    public List<Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
-    }
 }

@@ -38,9 +38,11 @@ public class ProfileService {
         user.setLastName(profileDto.getLastName());
         user.setEmail(profileDto.getEmail());
         userRepository.save(user);
+
         List<Cart> carts = cartRepository.findAll().stream()
                 .filter(cart -> cart.getUser().getId().equals(user.getId()))
                 .collect(Collectors.toList());
+
         return new ProfileDto(user, carts);
     }
 
