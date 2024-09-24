@@ -12,18 +12,17 @@ import com.uade.grupo4.backend_ecommerce.repository.CartRepository;
 import com.uade.grupo4.backend_ecommerce.repository.Enum.RoleEnum;
 import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
 import com.uade.grupo4.backend_ecommerce.repository.UserRepository;
-import com.uade.grupo4.backend_ecommerce.repository.entity.Cart;
-import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
-import com.uade.grupo4.backend_ecommerce.repository.entity.ProductImage;
-import com.uade.grupo4.backend_ecommerce.repository.entity.User;
+import com.uade.grupo4.backend_ecommerce.repository.entity.*;
 import com.uade.grupo4.backend_ecommerce.service.implementations.CartService;
 import com.uade.grupo4.backend_ecommerce.service.implementations.ProductService;
 import com.uade.grupo4.backend_ecommerce.service.implementations.UserService;
+import org.antlr.v4.runtime.misc.Array2DHashSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -52,6 +51,8 @@ public class CartServiceTest {
 
     @Mock
     private ProductRepository productRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     public void setUp() {
@@ -61,7 +62,9 @@ public class CartServiceTest {
 
     @Test
     public void addProduct_Successful(){
-       /* //Registro el usuario para que lo busque
+       ///Registro el usuario para que lo busque
+
+        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
         UserRegistrationDto userRegistrationDto=new UserRegistrationDto();
         userRegistrationDto.setUsername("TesterUseer");
         userRegistrationDto.setEmail("test@uade.edu.ar");
@@ -77,7 +80,7 @@ public class CartServiceTest {
             return user;
         });
         //Registro al usuario
-        userService.registerUser(userRegistrationDto);*/
+        userService.registerUser(userRegistrationDto);
 
         //Creo el usuario que le voy a pasar
         User user=new User();
@@ -91,7 +94,7 @@ public class CartServiceTest {
         user.setRole(RoleEnum.USER);
 
 
-/*
+        /*
         //Registro el producto para que lo busque y exista el producto
         ProductDto productDto=new ProductDto(1L,"Pantalon",
                 "Pantalon largo deportivo",1L,20,150L,
@@ -100,17 +103,17 @@ public class CartServiceTest {
        when(productRepository.save(any(Product.class))).thenAnswer(invocation -> {
             Product product = invocation.getArgument(0);
             return product;
-        });
+        });*/
         //Agrega el producto al carrito
-        productService.saveProduct(productDto);*/
+        //productService.saveProduct(productDto);
 
         //Ejecuta el metodo addProductToCart
         //CartDto resultCart=cartService.addProductToCart(1L,5, user);
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, ()->{
+       ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, ()->{
             cartService.addProductToCart(1L,5, user);
         });
-        /*
+/*
         //Hago las verificaciones que guarda se creo el carrito correctamente
         assertNotNull(resultCart);
         assertEquals(user.getId(),resultCart.getUser().getId());
@@ -132,7 +135,8 @@ public class CartServiceTest {
     }*/
     @Test
     public void emptyCart_PrevioslyException(){
-/* //Registro el usuario para que lo busque
+        //Registro el usuario para que lo busque
+        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
         UserRegistrationDto userRegistrationDto=new UserRegistrationDto();
         userRegistrationDto.setUsername("TesterUseer");
         userRegistrationDto.setEmail("test@uade.edu.ar");
@@ -148,7 +152,7 @@ public class CartServiceTest {
             return user;
         });
         //Registro al usuario
-        userService.registerUser(userRegistrationDto);*/
+        userService.registerUser(userRegistrationDto);
 
         //Creo el usuario que le voy a pasar
         User user=new User();
@@ -160,7 +164,6 @@ public class CartServiceTest {
         user.setFirstName("Test");
         user.setLastName("UserTester");
         user.setRole(RoleEnum.USER);
-
 
 /*
         //Registro el producto para que lo busque y exista el producto
@@ -199,7 +202,8 @@ public class CartServiceTest {
 
     @Test
     public void removeProduct_ItemNotExist() {
-/* //Registro el usuario para que lo busque
+        //Registro el usuario para que lo busque
+        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
         UserRegistrationDto userRegistrationDto=new UserRegistrationDto();
         userRegistrationDto.setUsername("TesterUseer");
         userRegistrationDto.setEmail("test@uade.edu.ar");
@@ -215,10 +219,10 @@ public class CartServiceTest {
             return user;
         });
         //Registro al usuario
-        userService.registerUser(userRegistrationDto);*/
+        userService.registerUser(userRegistrationDto);
 
         //Creo el usuario que le voy a pasar
-        User user = new User();
+        User user=new User();
         user.setId(1L);
         user.setUsername("TesterUseer");
         user.setEmail("test@uade.edu.ar");
