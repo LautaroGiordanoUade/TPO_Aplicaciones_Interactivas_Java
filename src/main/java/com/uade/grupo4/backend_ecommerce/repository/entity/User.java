@@ -52,7 +52,7 @@ public class User implements UserDetails {
         return this.email;
     }
 
-    //use by common
+    //use to get user name
     public String getUserName() {
         return this.username;
     }

@@ -7,24 +7,22 @@ import com.uade.grupo4.backend_ecommerce.repository.*;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Category;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
 import com.uade.grupo4.backend_ecommerce.repository.entity.User;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 public class ProductServiceTest {
 
@@ -45,58 +43,70 @@ public class ProductServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void testSaveProduct_EmptyName_ThrowException() {
-        // Arrange
-        ProductDto productDto = new ProductDto(
-                null,
-                null,
-                "Description",
-                1L,
-                1,
-                1L,
-                true,
-                Collections.singletonList(new ProductImageDto(1L, 1L, ""))
-        );
+        assertThrows(ValidationException.class,
+                ()-> {
+                    // Arrange
+                    ProductDto productDto = new ProductDto(
+                            null,
+                            null,
+                            "Description",
+                            1L,
+                            1,
+                            1L,
+                            true,
+                            Collections.singletonList(new ProductImageDto(1L, 1L, ""))
+                    );
 
-        // Act
-        productService.saveProduct(productDto);
+                    // Act
+                    productService.saveProduct(productDto);
+                }
+        );
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void testSaveProduct_NoPrice_ThrowException() {
-        // Arrange
-        ProductDto productDto = new ProductDto(
-                null,
-                "name",
-                "Description",
-                1L,
-                1,
-                null,
-                true,
-                Collections.singletonList(new ProductImageDto(1L, 1L, ""))
-        );
+        assertThrows(ValidationException.class,
+                ()-> {
+                    // Arrange
+                    ProductDto productDto = new ProductDto(
+                            null,
+                            "name",
+                            "Description",
+                            1L,
+                            1,
+                            null,
+                            true,
+                            Collections.singletonList(new ProductImageDto(1L, 1L, ""))
+                    );
 
-        // Act
-        productService.saveProduct(productDto);
+                    // Act
+                    productService.saveProduct(productDto);
+                }
+        );
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void testSaveProduct_NoImages_ThrowException() {
-        // Arrange
-        ProductDto productDto = new ProductDto(
-                null,
-                "name",
-                "Description",
-                1L,
-                1,
-                1L,
-                true,
-                Collections.emptyList()
-        );
+        assertThrows(ValidationException.class,
+                ()-> {
+                    // Arrange
+                    ProductDto productDto = new ProductDto(
+                            null,
+                            "name",
+                            "Description",
+                            1L,
+                            1,
+                            1L,
+                            true,
+                            Collections.emptyList()
+                    );
 
-        // Act
-        productService.saveProduct(productDto);
+                    // Act
+                    productService.saveProduct(productDto);
+                }
+        );
     }
 
     @Test
