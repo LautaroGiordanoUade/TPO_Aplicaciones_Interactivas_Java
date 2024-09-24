@@ -149,7 +149,7 @@ public class CartService implements CartServiceInterface {
             Product product = productRepository.findById(productId).orElseThrow();
 
             if (product.getQuantity() < quantity) {
-                throw new ProductOutOfStockException("No hay Stock disponible para el producto"+item.getProduct().getName());
+                throw new ProductOutOfStockException("No hay Stock disponible para el producto: "+item.getProduct().getName());
             }
             product.setQuantity(product.getQuantity() - quantity);
             productRepository.save(product);
