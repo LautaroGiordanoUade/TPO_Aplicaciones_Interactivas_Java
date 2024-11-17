@@ -57,8 +57,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> getAllProducts() {
-        final List<ProductDto> products = productService.getAllProducts();
+    public ResponseEntity<List<ProductDto>> getProducts(@RequestParam(required = false) String search) {
+        final List<ProductDto> products = productService.getProducts(search);
         return ResponseEntity.ok(products);
     }
 
@@ -85,7 +85,7 @@ public class ProductController {
     }
 
     @GetMapping("/featured")
-    public ResponseEntity<List<ProductDto>> getFeturedProducts() {
+    public ResponseEntity<List<ProductDto>> getFeaturedProducts() {
         final List<ProductDto> products = productService.getFeaturedProducts();
         return ResponseEntity.ok(products);
     }
