@@ -31,6 +31,7 @@ public class SecurityConfig {
                                         .requestMatchers("/api/v1/product/admin/**").hasAnyAuthority(RoleEnum.ADMIN.name())
                                         .requestMatchers("/api/v1/product/user/**").hasAnyAuthority(RoleEnum.USER.name())
                                         .requestMatchers("/api/v1/product/**").permitAll()
+                                        .requestMatchers("/api/v1/category/**").permitAll()
                                                 .anyRequest()
                                                 .authenticated())
                                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
