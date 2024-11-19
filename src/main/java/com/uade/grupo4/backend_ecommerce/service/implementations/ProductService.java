@@ -63,8 +63,13 @@ public class ProductService implements ProductServiceInterface {
         productRepository.deleteById(id);
     }
 
-    public List<ProductDto> getAllProducts() {
-        final List<Product> products = productRepository.findAll();
+    public List<ProductDto> getProducts(final String search) {
+        final List<Product> products;
+        if (search != null && !search.isBlank()){
+            products = productRepository.findByNameContaining(search);
+        } else {
+            products = productRepository.findAll();
+        }
         return ProductMapper.toDtoList(products);
     }
 

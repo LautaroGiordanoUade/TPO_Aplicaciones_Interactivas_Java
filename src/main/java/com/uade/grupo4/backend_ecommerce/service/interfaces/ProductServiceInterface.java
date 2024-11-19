@@ -8,7 +8,7 @@ public interface ProductServiceInterface {
     ProductDto saveProduct(ProductDto productDto);
     ProductDto updateProduct(ProductDto productDto);
     void deleteProduct(Long id);
-    List<ProductDto> getAllProducts();
+    List<ProductDto> getProducts(String search);
     ProductDto getById(Long id);
     List<ProductDto> getByUserId();
     List<ProductDto> getByCategoryId(Long categoryId);
