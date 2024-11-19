@@ -25,7 +25,7 @@ public class ProductController {
         try {
             ProductDto createdProduct = productService.saveProduct(productDto);
             return ResponseEntity.created(URI.create("/api/v1/product/" + createdProduct.getId())).body(createdProduct);
-        } catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException | ValidationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
