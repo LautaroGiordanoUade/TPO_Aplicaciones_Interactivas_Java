@@ -18,8 +18,8 @@ public class AuthenticationResponse {
     private long id;
     private String username;
     private String email;
-    private String password;
     private String birthDate;
     private String firstName;
     private String lastName;
+    private String role;
 }
