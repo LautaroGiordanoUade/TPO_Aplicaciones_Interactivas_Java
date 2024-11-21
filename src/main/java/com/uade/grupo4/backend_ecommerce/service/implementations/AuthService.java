@@ -50,6 +50,7 @@ public class AuthService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .birthDate(user.getBirthDate().toString())
+                .role(user.getRole().toString())
                 .build();
     }
 }
