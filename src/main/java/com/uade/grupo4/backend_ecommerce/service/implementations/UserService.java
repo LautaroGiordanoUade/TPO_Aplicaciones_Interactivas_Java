@@ -65,7 +65,7 @@ public class UserService implements UserServiceInterface {
         user.setBirthDate(userRegistrationDto.getBirthDate());
         user.setFirstName(userRegistrationDto.getFirstName());
         user.setLastName(userRegistrationDto.getLastName());
-        user.setRole(RoleEnum.USER); // siempre van a ser USER, se les cambia a admin por db, a excepcion del primer
+        user.setRole(RoleEnum.USER);
 
         userRepository.save(user);
 
