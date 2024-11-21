@@ -21,6 +21,7 @@ public class ProductMapper {
                 product.getQuantity(),
                 product.getPrice(),
                 product.isFeatured(),
+                product.isFavorite(),
                 ProductImageMapper.toDtoList(product.getImages())
         );
     }
@@ -43,7 +44,8 @@ public class ProductMapper {
                 productDto.isFeatured(),
                 new HashSet<>(),
                 new HashSet<>(),
-                ProductImageMapper.toEntityList(productDto.getImages())
+                ProductImageMapper.toEntityList(productDto.getImages()),
+                productDto.isFavorite()
         );
     }
 }

@@ -79,6 +79,12 @@ public class ProductService implements ProductServiceInterface {
 
         saveViewedProduct(product);
 
+        final User user = userService.getLoggedUser();
+        if (user != null) {
+            final boolean isFavorite = favoriteProductRepository.findByUserIdAndProductId(user.getId(), id).isPresent();
+            product.setFavorite(isFavorite);
+        }
+
         return ProductMapper.toDto(product);
     }
 
