@@ -15,6 +15,7 @@ import com.uade.grupo4.backend_ecommerce.repository.entity.User;
 import com.uade.grupo4.backend_ecommerce.repository.mapper.CartMapper;
 import com.uade.grupo4.backend_ecommerce.service.interfaces.CartServiceInterface;
 import com.uade.grupo4.backend_ecommerce.service.interfaces.UserServiceInterface;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -98,7 +99,6 @@ public class CartService implements CartServiceInterface {
         Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
 
         CartItem cartItem= cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
-
 
         if (cartItem != null) {
             int newQuantity = cartItem.getQuantity() - quantity;
@@ -188,6 +188,11 @@ public class CartService implements CartServiceInterface {
                     .mapToInt(CartItem::getQuantity).sum();
         }
         return 0;
+    }
+
+    public CartItem getCartItemById(Long cartItemId, User user) {
+        return cartItemRepository.findByIdAndUser (cartItemId, user)
+                .orElseThrow(() -> new EntityNotFoundException("No se pudo encontrar el item del carrito"));
     }
 
 

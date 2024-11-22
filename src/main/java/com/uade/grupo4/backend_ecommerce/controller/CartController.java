@@ -6,6 +6,7 @@ import com.uade.grupo4.backend_ecommerce.controller.dto.*;
 import com.uade.grupo4.backend_ecommerce.exception.*;
 import com.uade.grupo4.backend_ecommerce.repository.entity.CartItem;
 import com.uade.grupo4.backend_ecommerce.repository.entity.User;
+import com.uade.grupo4.backend_ecommerce.repository.mapper.CartItemMapper;
 import com.uade.grupo4.backend_ecommerce.repository.mapper.UserMapper;
 import com.uade.grupo4.backend_ecommerce.service.implementations.CartService;
 import com.uade.grupo4.backend_ecommerce.service.implementations.UserService;
@@ -35,14 +36,15 @@ public class CartController {
 
 
 
-    @PostMapping("/add/{id}")
+    @PostMapping("/add")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<Object> addProductToCart(@RequestBody Long id){
+    public ResponseEntity<Object> addProductToCart(@RequestBody CartItemDto cartItemDto){
         try {
             User user=userService.getLoggedUser();
-            int quantity=cartService.getProductQuantityInCart(user,id);
-            cartService.addProductToCart(id,quantity, user);
-            return ResponseEntity.ok("El producto se ha agregado correctamente");
+            int quantity=cartService.getProductQuantityInCart(user,cartItemDto.getId());
+            cartService.addProductToCart(cartItemDto.getId(),quantity, user);
+            CartItem cartItemDtoResponsive=cartService.getCartItemById(cartItemDto.getId(),user);
+            return ResponseEntity.ok(CartItemMapper.toDTO(cartItemDtoResponsive));
         }catch(NewProductOutOfStockException | ProductInCartOutOfStockException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -54,7 +56,6 @@ public class CartController {
         try{
             User user=userService.getLoggedUser();
             int quantity=cartService.getProductQuantityInCart(user,id);
-            cartService.addProductToCart(id,quantity, user);
             cartService.removeProductFromCart(id,quantity, user);
             return ResponseEntity.ok("El producto se ha eliminado correctamente");
         }catch (NegativeCartException | ProductRemovalFromCartException e){
@@ -88,10 +89,10 @@ public class CartController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<Object> getCartUser(){
-        User user=userService.getLoggedUser();
-        final CartDto cart = cartService.getCartUser(user);
+    public ResponseEntity<Object> getCartUser() throws Exception {
+        UserDto user=userService.getUserById(1L);
+        System.out.println("Aca estoy");
+        final CartDto cart = cartService.getCartUser(UserMapper.toEntity(user));
         return ResponseEntity.ok(cart);
     }
     //PARA BUSCAR EL CARRITO DE ESE USUARIO
