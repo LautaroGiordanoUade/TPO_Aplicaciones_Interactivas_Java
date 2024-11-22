@@ -24,12 +24,6 @@ public class CartMapper {
 
     }
 
-    public static List<CartDto> toDTOList(List<Cart>carts){
-        return carts.stream().map(
-                CartMapper ::toDTO
-        ).toList();
-    }
-
     public static Cart toEntity(CartDto dto){
         List<CartItem> items=new ArrayList<>();
         for(CartItemDto item:dto.getItems()){
