@@ -10,14 +10,16 @@ public class CartItemMapper {
         return new CartItemDto(
                 item.getId(),
                 ProductMapper.toDto(item.getProduct()),
-                String.valueOf(item.getQuantity())
+                String.valueOf(item.getQuantity()),
+                String.valueOf(item.getPrice())
         );
     }
 
     public static CartItem toEntity(CartItemDto dto) {
         return new CartItem(
                 ProductMapper.toEntity(dto.getProduct()),
-                Integer.parseInt(dto.getQuantity())
+                Integer.parseInt(dto.getQuantity()),
+                Double.parseDouble(dto.getPrice())
         );
 
     }
