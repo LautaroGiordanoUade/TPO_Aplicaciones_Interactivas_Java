@@ -21,13 +21,11 @@ public class CartItem {
     @JoinColumn(name="product_id")
     private Product product;
     private int quantity;
-    private double price;
 
 
-    public CartItem( Product product, int quantity,double price) {
+    public CartItem( Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
-        this.price=price;
     }
 
 
