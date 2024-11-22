@@ -15,5 +15,6 @@ public class ProductDto {
     private int quantity;
     private Long price;
     private boolean featured;
+    private boolean favorite;
     private List<ProductImageDto> images;
 }

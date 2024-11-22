@@ -8,6 +8,7 @@ import com.uade.grupo4.backend_ecommerce.service.interfaces.ProductServiceInterf
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -20,6 +21,7 @@ public class ProductController {
     @Autowired
     ProductServiceInterface productService;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/admin")
     public ResponseEntity<?> createProduct(@RequestBody ProductDto productDto) {
         try {
@@ -30,6 +32,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/admin")
     public ResponseEntity<?> updateProduct(@RequestBody ProductDto productDto) {
         try {
@@ -44,6 +47,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/admin/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         try {
@@ -72,6 +76,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/admin")
     public ResponseEntity<List<ProductDto>> getProductByUserId() {
         final List<ProductDto> products = productService.getByUserId();
@@ -90,6 +95,7 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @PreAuthorize("hasAuthority('USER')")
     @PostMapping("/user/favorite/{id}")
     public ResponseEntity<?> addFavorite(@PathVariable Long id) {
         try {
@@ -100,6 +106,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasAuthority('USER')")
     @DeleteMapping("/user/favorite/{id}")
     public ResponseEntity<?> removeFavorite(@PathVariable Long id) {
         try {
@@ -110,12 +117,14 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasAuthority('USER')")
     @GetMapping("/user/favorites")
     public ResponseEntity<List<ProductDto>> getFavorites() {
         List<ProductDto> favoriteProducts = productService.getFavorites();
         return ResponseEntity.ok(favoriteProducts);
     }
 
+    @PreAuthorize("hasAuthority('USER')")
     @GetMapping("/user/viewed")
     public ResponseEntity<List<ProductDto>> getViewed() {
         List<ProductDto> favoriteProducts = productService.getViewed();
