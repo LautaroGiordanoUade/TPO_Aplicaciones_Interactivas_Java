@@ -88,16 +88,6 @@ public class CartController {
     }
 
 
-    @GetMapping("/quantity/{id}")
-    public ResponseEntity<Object> getQuantityOnProduct(@RequestParam Long id ){
-        User user=userService.getLoggedUser();
 
-        if(user == null){
-            return ResponseEntity.notFound().build();
-        }
-        int quantity=cartService.getProductQuantityInCart(user,id);
-        return ResponseEntity.ok(quantity);
-
-    }
 
 }
