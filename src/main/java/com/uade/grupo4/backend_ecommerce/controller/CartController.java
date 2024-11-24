@@ -2,10 +2,9 @@ package com.uade.grupo4.backend_ecommerce.controller;
 
 
 
-import com.uade.grupo4.backend_ecommerce.controller.dto.CartDto;
-import com.uade.grupo4.backend_ecommerce.controller.dto.ProductCartDTO;
-import com.uade.grupo4.backend_ecommerce.controller.dto.UserDto;
+import com.uade.grupo4.backend_ecommerce.controller.dto.*;
 import com.uade.grupo4.backend_ecommerce.exception.*;
+import com.uade.grupo4.backend_ecommerce.repository.entity.Cart;
 import com.uade.grupo4.backend_ecommerce.repository.entity.User;
 import com.uade.grupo4.backend_ecommerce.repository.mapper.UserMapper;
 import com.uade.grupo4.backend_ecommerce.service.implementations.CartService;
@@ -17,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/cart")
@@ -35,8 +36,8 @@ public class CartController {
     public ResponseEntity<Object> addProductToCart(@RequestBody ProductCartDTO productCartDTO){
         try {
             User user=userService.getLoggedUser();
-            cartService.addProductToCart(productCartDTO.getProductId(),productCartDTO.getQuantity(), user);
-            return ResponseEntity.ok("El producto se ha agregado correctamente");
+            CartProductDTO productCart =cartService.addProductToCart(productCartDTO.getProductId(),productCartDTO.getQuantity(), user);
+            return ResponseEntity.ok(productCart);
         }catch(NewProductOutOfStockException | ProductInCartOutOfStockException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -79,5 +80,24 @@ public class CartController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<Object> getProductsCart(@RequestParam(required = false) String search) {
+        User user=userService.getLoggedUser();
+        final CartDto cart = cartService.getCartsByUser(user);
+        return ResponseEntity.ok(cart);
+    }
+
+
+    @GetMapping("/quantity/{id}")
+    public ResponseEntity<Object> getQuantityOnProduct(@RequestParam Long id ){
+        User user=userService.getLoggedUser();
+
+        if(user == null){
+            return ResponseEntity.notFound().build();
+        }
+        int quantity=cartService.getProductQuantityInCart(user,id);
+        return ResponseEntity.ok(quantity);
+
+    }
 
 }
