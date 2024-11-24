@@ -22,7 +22,7 @@ public class ProfileController {
 
     @PatchMapping
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<ProfileDto> updateProfile(@RequestBody ProfileDto profileDto) {
+    public ResponseEntity<ProfileDto> updateProfile(@RequestBody ProfileDto profileDto) throws Exception {
         ProfileDto updatedProfile = profileService.updateProfile(profileDto);
         return ResponseEntity.ok(updatedProfile);
     }
