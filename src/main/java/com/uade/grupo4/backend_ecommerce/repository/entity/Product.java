@@ -28,7 +28,7 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1048576)
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,4 +52,6 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductImage> images = new ArrayList<>();
+
+    private boolean favorite;
 }

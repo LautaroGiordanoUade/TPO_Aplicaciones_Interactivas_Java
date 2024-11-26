@@ -3,10 +3,7 @@ package com.uade.grupo4.backend_ecommerce.service.implementations;
 import com.uade.grupo4.backend_ecommerce.exception.NotOwnerException;
 import com.uade.grupo4.backend_ecommerce.exception.ResourceNotFoundException;
 import com.uade.grupo4.backend_ecommerce.exception.ValidationException;
-import com.uade.grupo4.backend_ecommerce.repository.CategoryRepository;
-import com.uade.grupo4.backend_ecommerce.repository.FavoriteProductRepository;
-import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
-import com.uade.grupo4.backend_ecommerce.repository.ViewedProductRepository;
+import com.uade.grupo4.backend_ecommerce.repository.*;
 import com.uade.grupo4.backend_ecommerce.repository.entity.*;
 import com.uade.grupo4.backend_ecommerce.controller.dto.ProductDto;
 import com.uade.grupo4.backend_ecommerce.repository.mapper.ProductMapper;
@@ -34,6 +31,8 @@ public class ProductService implements ProductServiceInterface {
     ViewedProductRepository viewedProductRepository;
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    ProductImageRepository productImageRepository;
 
     public ProductDto saveProduct(final ProductDto productDto) {
         validateProduct(productDto);
@@ -45,8 +44,11 @@ public class ProductService implements ProductServiceInterface {
         return ProductMapper.toDto(savedProduct);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public ProductDto updateProduct(final ProductDto productDto) {
         validateExistingProduct(productDto);
+
+        productImageRepository.deleteByProductId(productDto.getId());
 
         Product product = ProductMapper.toEntity(productDto);
         product.setUser(userService.getLoggedUser());
@@ -63,8 +65,13 @@ public class ProductService implements ProductServiceInterface {
         productRepository.deleteById(id);
     }
 
-    public List<ProductDto> getAllProducts() {
-        final List<Product> products = productRepository.findAll();
+    public List<ProductDto> getProducts(final String search) {
+        final List<Product> products;
+        if (search != null && !search.isBlank()){
+            products = productRepository.findByNameContaining(search);
+        } else {
+            products = productRepository.findAll();
+        }
         return ProductMapper.toDtoList(products);
     }
 
@@ -73,6 +80,12 @@ public class ProductService implements ProductServiceInterface {
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontró el producto."));
 
         saveViewedProduct(product);
+
+        final User user = userService.getLoggedUser();
+        if (user != null) {
+            final boolean isFavorite = favoriteProductRepository.findByUserIdAndProductId(user.getId(), id).isPresent();
+            product.setFavorite(isFavorite);
+        }
 
         return ProductMapper.toDto(product);
     }

@@ -15,10 +15,11 @@ import com.uade.grupo4.backend_ecommerce.service.interfaces.UserServiceInterface
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("api/v1/cart")
 public class CartController {
 
 
@@ -30,6 +31,7 @@ public class CartController {
 
 
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<Object> addProductToCart(@RequestBody ProductCartDTO productCartDTO){
         try {
             User user=userService.getLoggedUser();
@@ -41,6 +43,7 @@ public class CartController {
     }
 
     @DeleteMapping("/remove")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<String> deleteProductFromCart(@RequestBody ProductCartDTO productCartDTO) throws Exception {
         try{
             User user=userService.getLoggedUser();
@@ -53,6 +56,7 @@ public class CartController {
     }
 
     @DeleteMapping("/empty")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<Object> emptyCart() {
         try {
             User user=userService.getLoggedUser();
@@ -64,6 +68,7 @@ public class CartController {
     }
 
     @PostMapping("/checkout")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<Object> checkoutCart(){
         try {
             User user=userService.getLoggedUser();

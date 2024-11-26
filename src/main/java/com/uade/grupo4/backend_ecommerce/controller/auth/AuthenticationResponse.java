@@ -14,4 +14,12 @@ public class AuthenticationResponse {
 
     @JsonProperty("access_token")
     private String accessToken;
+
+    private long id;
+    private String username;
+    private String email;
+    private String birthDate;
+    private String firstName;
+    private String lastName;
+    private String role;
 }

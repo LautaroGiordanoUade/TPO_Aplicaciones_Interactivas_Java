@@ -8,6 +8,7 @@ import com.uade.grupo4.backend_ecommerce.service.interfaces.ProductServiceInterf
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -20,16 +21,18 @@ public class ProductController {
     @Autowired
     ProductServiceInterface productService;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/admin")
     public ResponseEntity<?> createProduct(@RequestBody ProductDto productDto) {
         try {
             ProductDto createdProduct = productService.saveProduct(productDto);
             return ResponseEntity.created(URI.create("/api/v1/product/" + createdProduct.getId())).body(createdProduct);
-        } catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException | ValidationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/admin")
     public ResponseEntity<?> updateProduct(@RequestBody ProductDto productDto) {
         try {
@@ -44,6 +47,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/admin/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         try {
@@ -57,8 +61,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> getAllProducts() {
-        final List<ProductDto> products = productService.getAllProducts();
+    public ResponseEntity<List<ProductDto>> getProducts(@RequestParam(required = false) String search) {
+        final List<ProductDto> products = productService.getProducts(search);
         return ResponseEntity.ok(products);
     }
 
@@ -72,6 +76,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/admin")
     public ResponseEntity<List<ProductDto>> getProductByUserId() {
         final List<ProductDto> products = productService.getByUserId();
@@ -85,11 +90,12 @@ public class ProductController {
     }
 
     @GetMapping("/featured")
-    public ResponseEntity<List<ProductDto>> getFeturedProducts() {
+    public ResponseEntity<List<ProductDto>> getFeaturedProducts() {
         final List<ProductDto> products = productService.getFeaturedProducts();
         return ResponseEntity.ok(products);
     }
 
+    @PreAuthorize("hasAuthority('USER')")
     @PostMapping("/user/favorite/{id}")
     public ResponseEntity<?> addFavorite(@PathVariable Long id) {
         try {
@@ -100,6 +106,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasAuthority('USER')")
     @DeleteMapping("/user/favorite/{id}")
     public ResponseEntity<?> removeFavorite(@PathVariable Long id) {
         try {
@@ -110,12 +117,14 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasAuthority('USER')")
     @GetMapping("/user/favorites")
     public ResponseEntity<List<ProductDto>> getFavorites() {
         List<ProductDto> favoriteProducts = productService.getFavorites();
         return ResponseEntity.ok(favoriteProducts);
     }
 
+    @PreAuthorize("hasAuthority('USER')")
     @GetMapping("/user/viewed")
     public ResponseEntity<List<ProductDto>> getViewed() {
         List<ProductDto> favoriteProducts = productService.getViewed();
