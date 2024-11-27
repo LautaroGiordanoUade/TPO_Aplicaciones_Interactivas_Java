@@ -39,39 +39,43 @@ public class CartService implements CartServiceInterface {
 
 
     public CartProductDTO addProductToCart(Long productId, int quantity,User user) {
-        Product product = productRepository.findById(productId).orElseThrow(()->new ResourceNotFoundException("No existe el producto"));
-        Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
-        int finalQuantity=1;
-        if (cart == null ){
-            cart=new Cart();
-            cart.setUser(user);
-            cart.setItems(new ArrayList<CartItem>());
+        try {
+            Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("No existe el producto"));
+            Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
+            int finalQuantity = 1;
+            if (cart == null) {
+                cart = new Cart();
+                cart.setUser(user);
+                cart.setItems(new ArrayList<CartItem>());
+                cartRepository.save(cart);
+            }
+
+            CartItem existingItem = cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
+            if (existingItem != null) {
+                if (product.getQuantity() < (existingItem.getQuantity() + quantity)) {
+                    throw new ProductInCartOutOfStockException("No hay mas cantidad de stock para agregar al producto ingresado: " + product.getName());
+                }
+                existingItem.setQuantity(existingItem.getQuantity() + quantity);
+                cartItemRepository.save(existingItem);
+                finalQuantity = existingItem.getQuantity();
+            } else {
+                if (product.getQuantity() < quantity) {
+                    throw new NewProductOutOfStockException("No hay esa cantidad de stock para agregar al producto ingresado: " + product.getName());
+                }
+                CartItem newItem = new CartItem(product, quantity, product.getPrice());
+                cartItemRepository.save(newItem);
+                cart.getItems().add(newItem);
+
+            }
+
+
+            cart.setTotal(cart.getTotal() + (product.getPrice() * quantity));
             cartRepository.save(cart);
+            return new CartProductDTO(productId, product.getName(), finalQuantity, product.getPrice());
         }
-
-        CartItem existingItem= cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
-        if (existingItem != null) {
-           /* if (product.getQuantity() <(existingItem.getQuantity() + quantity)){
-                throw new ProductInCartOutOfStockException("No hay mas cantidad de stock para agregar al producto ingresado: "+product.getName());
-            }*/
-            existingItem.setQuantity(existingItem.getQuantity() + quantity);
-            cartItemRepository.save(existingItem);
-            finalQuantity=existingItem.getQuantity();
-        } else {
-            /*if (product.getQuantity() < quantity ){
-                throw new NewProductOutOfStockException("No hay esa cantidad de stock para agregar al producto ingresado: "+product.getName());
-            }*/
-            CartItem newItem = new CartItem(product, quantity,product.getPrice());
-            cartItemRepository.save(newItem);
-            cart.getItems().add(newItem);
-
+        catch (Exception e){
+            throw e;
         }
-
-
-        cart.setTotal(cart.getTotal() + (product.getPrice() * quantity));
-        cartRepository.save(cart);
-        return new CartProductDTO(productId,product.getName(),finalQuantity,product.getPrice());
-
     }
 
 
@@ -85,10 +89,10 @@ public class CartService implements CartServiceInterface {
 
         if (cartItem != null) {
             int newQuantity = cartItem.getQuantity() - quantity;
-            /*if (newQuantity < 0) {
+            if (newQuantity < 0) {
                 throw new NegativeCartException("No puede quedar la cantidad en negativo");
 
-            } else*/ if (newQuantity == 0) {
+            } else if (newQuantity == 0) {
                 cart.getItems().remove(cartItem);
                 cartItemRepository.delete(cartItem);
             } else {
@@ -96,9 +100,9 @@ public class CartService implements CartServiceInterface {
                 cartItemRepository.save(cartItem);
             }
         }
-        /*else{
+        else{
             throw new ProductRemovalFromCartException("No se puede eliminar un producto que no esta en el carrito");
-        }*/
+        }
         cart.setTotal(cart.getTotal() - (product.getPrice() * quantity));
         cartRepository.save(cart);
         return CartMapper.toDTO(cart);
@@ -156,10 +160,24 @@ public class CartService implements CartServiceInterface {
 
     public CartDto getCartsByUser(User user){
        Cart cart= cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
+       if (cart==null){
+           throw new Error("No hay ningun producto en el carrito");
+       }
        return CartMapper.toDTO(cart);
     }
 
 
-
-
+    public List<CartDto> getHistoryPurchase(User user){
+        List<CartDto> cartsDtos=new ArrayList<CartDto>();
+        List<Cart>carts =cartRepository.findByUser(user);
+        if (carts==null){
+            throw new Error("El usuario no tiene compras realizadas");
+        }
+        for (Cart cart : carts) {
+            if (cart.getCheckoutDate() != null) {
+                cartsDtos.add(CartMapper.toDTO(cart));
+            }
+        }
+        return cartsDtos;
+    }
 }

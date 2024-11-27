@@ -14,4 +14,5 @@ public interface CartServiceInterface {
     boolean emptyCart(User user);
     float checkoutCart(User user);
     CartDto getCartsByUser(User user);
+    List<CartDto> getHistoryPurchase(User user);
 }

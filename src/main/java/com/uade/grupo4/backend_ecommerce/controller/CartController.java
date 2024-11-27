@@ -82,12 +82,29 @@ public class CartController {
 
     @GetMapping
     public ResponseEntity<Object> getProductsCart(@RequestParam(required = false) String search) {
-        User user=userService.getLoggedUser();
-        final CartDto cart = cartService.getCartsByUser(user);
-        return ResponseEntity.ok(cart);
+        try {
+            User user=userService.getLoggedUser();
+            final CartDto cart = cartService.getCartsByUser(user);
+            return ResponseEntity.ok(cart);
+        }catch (Error e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
     }
 
 
 
+    @GetMapping("/purchase-history")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<Object> getHistorysCarts(@RequestParam(required = false) String search){
+        try {
+            User user=userService.getLoggedUser();
+            List<CartDto> carts=cartService.getHistoryPurchase(user);
+            return ResponseEntity.ok(carts);
+        }catch (Error e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+    }
 
 }
