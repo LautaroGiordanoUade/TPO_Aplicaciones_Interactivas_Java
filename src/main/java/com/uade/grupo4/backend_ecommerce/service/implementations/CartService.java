@@ -39,7 +39,6 @@ public class CartService implements CartServiceInterface {
 
 
     public CartProductDTO addProductToCart(Long productId, int quantity,User user) {
-        try {
             Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("No existe el producto"));
             Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
             int finalQuantity = 1;
@@ -52,30 +51,25 @@ public class CartService implements CartServiceInterface {
 
             CartItem existingItem = cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
             if (existingItem != null) {
-                if (product.getQuantity() < (existingItem.getQuantity() + quantity)) {
+                /*if (product.getQuantity() < (existingItem.getQuantity() + quantity)) {
                     throw new ProductInCartOutOfStockException("No hay mas cantidad de stock para agregar al producto ingresado: " + product.getName());
-                }
+                }*/
                 existingItem.setQuantity(existingItem.getQuantity() + quantity);
                 cartItemRepository.save(existingItem);
                 finalQuantity = existingItem.getQuantity();
             } else {
-                if (product.getQuantity() < quantity) {
+                /*if (product.getQuantity() < quantity) {
                     throw new NewProductOutOfStockException("No hay esa cantidad de stock para agregar al producto ingresado: " + product.getName());
-                }
+                }*/
                 CartItem newItem = new CartItem(product, quantity, product.getPrice());
                 cartItemRepository.save(newItem);
                 cart.getItems().add(newItem);
 
             }
 
-
             cart.setTotal(cart.getTotal() + (product.getPrice() * quantity));
             cartRepository.save(cart);
             return new CartProductDTO(productId, product.getName(), finalQuantity, product.getPrice());
-        }
-        catch (Exception e){
-            throw e;
-        }
     }
 
 
