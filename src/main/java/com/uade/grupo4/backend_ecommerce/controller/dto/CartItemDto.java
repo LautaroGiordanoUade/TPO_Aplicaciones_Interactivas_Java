@@ -6,11 +6,14 @@ public class CartItemDto {
 
     private ProductDto product;
     private String quantity;
+    private String price;
+    
 
-    public CartItemDto(Long id, ProductDto product, String quantity) {
+    public CartItemDto(Long id, ProductDto product, String quantity,String price) {
         this.id = id;
         this.product = product;
         this.quantity = quantity;
+        this.price=price;
     }
 
 
@@ -38,5 +41,13 @@ public class CartItemDto {
 
     public void setQuantity(String quantity) {
         this.quantity = quantity;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 }
