@@ -73,14 +73,15 @@ public class CartController {
     public ResponseEntity<Object> checkoutCart(){
         try {
             User user=userService.getLoggedUser();
-            float total = cartService.checkoutCart(user);
-            return ResponseEntity.ok("El carrito tiene un total de "+total);
+            cartService.checkoutCart(user);
+            return ResponseEntity.ok("El checkout se ha  correctamente");
         }catch (EmptyCartException | ProductOutOfStockException e ){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<Object> getProductsCart(@RequestParam(required = false) String search) {
         try {
             User user=userService.getLoggedUser();
@@ -102,7 +103,7 @@ public class CartController {
             List<CartDto> carts=cartService.getHistoryPurchase(user);
             return ResponseEntity.ok(carts);
         }catch (Error e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
     }

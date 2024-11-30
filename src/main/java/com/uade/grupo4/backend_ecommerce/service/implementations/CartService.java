@@ -142,7 +142,6 @@ public class CartService implements CartServiceInterface {
             }
             product.setQuantity(product.getQuantity() - quantity);
             productRepository.save(product);
-
         }
 
         cart.setCheckoutDate(new Date());
@@ -154,9 +153,15 @@ public class CartService implements CartServiceInterface {
 
     public CartDto getCartsByUser(User user){
        Cart cart= cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
-       if (cart==null){
-           throw new Error("No hay ningun producto en el carrito");
-       }
+        if (cart == null) {
+            cart = new Cart();
+            cart.setUser(user);
+            cart.setItems(new ArrayList<CartItem>());
+            cartRepository.save(cart);
+        }
+        if (cart==null){
+            throw new Error("Error al obtener el carrito del usuario");
+        }
        return CartMapper.toDTO(cart);
     }
 
