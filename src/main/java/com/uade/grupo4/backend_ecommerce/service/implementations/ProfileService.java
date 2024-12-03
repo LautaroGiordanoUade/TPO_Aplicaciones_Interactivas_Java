@@ -46,10 +46,11 @@ public class ProfileService {
         // Crea un UserDto para actualizar los datos del usuario usando UserService
         UserDto userDto = new UserDto(
                 loggedUser.getId(),
+                loggedUser.getUsername(),
+                profileDto.getEmail(),
                 profileDto.getFirstName(),
                 profileDto.getLastName(),
-                profileDto.getEmail(),
-                loggedUser.getUsername()
+                profileDto.getBirthDate()
         );
         userService.updateUser(loggedUser.getId(), userDto);
 
