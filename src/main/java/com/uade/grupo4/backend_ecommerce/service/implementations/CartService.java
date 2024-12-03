@@ -3,6 +3,7 @@ package com.uade.grupo4.backend_ecommerce.service.implementations;
 
 
 import com.uade.grupo4.backend_ecommerce.controller.dto.CartDto;
+import com.uade.grupo4.backend_ecommerce.controller.dto.CartProductDTO;
 import com.uade.grupo4.backend_ecommerce.exception.*;
 import com.uade.grupo4.backend_ecommerce.repository.CartItemRepository;
 import com.uade.grupo4.backend_ecommerce.repository.CartRepository;
@@ -12,15 +13,13 @@ import com.uade.grupo4.backend_ecommerce.repository.entity.CartItem;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
 import com.uade.grupo4.backend_ecommerce.repository.entity.User;
 import com.uade.grupo4.backend_ecommerce.repository.mapper.CartMapper;
+import com.uade.grupo4.backend_ecommerce.repository.mapper.ProductImageMapper;
 import com.uade.grupo4.backend_ecommerce.service.interfaces.CartServiceInterface;
 import com.uade.grupo4.backend_ecommerce.service.interfaces.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class CartService implements CartServiceInterface {
@@ -39,42 +38,38 @@ public class CartService implements CartServiceInterface {
 
 
 
-    public CartDto addProductToCart(Long productId, int quantity,User user) {
-        Product product = productRepository.findById(productId).orElseThrow(()->new ResourceNotFoundException("No existe el producto"));
-        Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
+    public CartProductDTO addProductToCart(Long productId, int quantity,User user) {
+            Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("No existe el producto"));
+            Cart cart = cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
+            int finalQuantity = 1;
+            if (cart == null) {
+                cart = new Cart();
+                cart.setUser(user);
+                cart.setItems(new ArrayList<CartItem>());
+                cartRepository.save(cart);
+            }
 
-        if (cart == null ){
-            cart=new Cart();
-            cart.setUser(user);
-            cart.setItems(new ArrayList<CartItem>());
+            CartItem existingItem = cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
+            if (existingItem != null) {
+                /*if (product.getQuantity() < (existingItem.getQuantity() + quantity)) {
+                    throw new ProductInCartOutOfStockException("No hay mas cantidad de stock para agregar al producto ingresado: " + product.getName());
+                }*/
+                existingItem.setQuantity(existingItem.getQuantity() + quantity);
+                cartItemRepository.save(existingItem);
+                finalQuantity = existingItem.getQuantity();
+            } else {
+                /*if (product.getQuantity() < quantity) {
+                    throw new NewProductOutOfStockException("No hay esa cantidad de stock para agregar al producto ingresado: " + product.getName());
+                }*/
+                CartItem newItem = new CartItem(product, quantity, product.getPrice());
+                cartItemRepository.save(newItem);
+                cart.getItems().add(newItem);
+
+            }
+
+            cart.setTotal(cart.getTotal() + (product.getPrice() * quantity));
             cartRepository.save(cart);
-        }
-
-        CartItem existingItem= cart.getItems().stream().filter(x -> Objects.equals(x.getProduct().getId(), productId)).findFirst().orElse(null);
-        if (existingItem != null) {
-            if (product.getQuantity() <(existingItem.getQuantity() + quantity)){
-                throw new ProductInCartOutOfStockException("No hay mas cantidad de stock para agregar al producto ingresado: "+product.getName());
-
-            }
-            existingItem.setQuantity(existingItem.getQuantity() + quantity);
-            cartItemRepository.save(existingItem);
-        } else {
-            if (product.getQuantity() < quantity ){
-                throw new NewProductOutOfStockException("No hay esa cantidad de stock para agregar al producto ingresado: "+product.getName());
-
-            }
-            CartItem newItem = new CartItem(product, quantity);
-            cartItemRepository.save(newItem);
-
-            cart.getItems().add(newItem);
-        }
-
-
-        cart.setTotal(cart.getTotal() + (product.getPrice() * quantity));
-        cartRepository.save(cart);
-
-        return CartMapper.toDTO(cart);
-
+            return new CartProductDTO(productId, product.getName(), finalQuantity, product.getPrice());
     }
 
 
@@ -147,7 +142,6 @@ public class CartService implements CartServiceInterface {
             }
             product.setQuantity(product.getQuantity() - quantity);
             productRepository.save(product);
-
         }
 
         cart.setCheckoutDate(new Date());
@@ -157,4 +151,32 @@ public class CartService implements CartServiceInterface {
     }
 
 
+    public CartDto getCartsByUser(User user){
+       Cart cart= cartRepository.findByUserAndCheckoutDate(user, null).orElse(null);
+        if (cart == null) {
+            cart = new Cart();
+            cart.setUser(user);
+            cart.setItems(new ArrayList<CartItem>());
+            cartRepository.save(cart);
+        }
+        if (cart==null){
+            throw new Error("Error al obtener el carrito del usuario");
+        }
+       return CartMapper.toDTO(cart);
+    }
+
+
+    public List<CartDto> getHistoryPurchase(User user){
+        List<CartDto> cartsDtos=new ArrayList<CartDto>();
+        List<Cart>carts =cartRepository.findByUser(user);
+        if (carts==null){
+            throw new Error("El usuario no tiene compras realizadas");
+        }
+        for (Cart cart : carts) {
+            if (cart.getCheckoutDate() != null) {
+                cartsDtos.add(CartMapper.toDTO(cart));
+            }
+        }
+        return cartsDtos;
+    }
 }
