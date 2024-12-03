@@ -3,7 +3,8 @@ package com.uade.grupo4.backend_ecommerce.service.implementations;
 import com.uade.grupo4.backend_ecommerce.controller.dto.ProductDto;
 import com.uade.grupo4.backend_ecommerce.controller.dto.ProductImageDto;
 import com.uade.grupo4.backend_ecommerce.exception.ValidationException;
-import com.uade.grupo4.backend_ecommerce.repository.*;
+import com.uade.grupo4.backend_ecommerce.repository.CategoryRepository;
+import com.uade.grupo4.backend_ecommerce.repository.ProductRepository;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Category;
 import com.uade.grupo4.backend_ecommerce.repository.entity.Product;
 import com.uade.grupo4.backend_ecommerce.repository.entity.User;
@@ -56,6 +57,7 @@ public class ProductServiceTest {
                             1,
                             1L,
                             true,
+                            true,
                             Collections.singletonList(new ProductImageDto(1L, 1L, ""))
                     );
 
@@ -77,6 +79,7 @@ public class ProductServiceTest {
                             1L,
                             1,
                             null,
+                            true,
                             true,
                             Collections.singletonList(new ProductImageDto(1L, 1L, ""))
                     );
@@ -100,6 +103,7 @@ public class ProductServiceTest {
                             1,
                             1L,
                             true,
+                            true,
                             Collections.emptyList()
                     );
 
@@ -119,6 +123,7 @@ public class ProductServiceTest {
                 1L,
                 1,
                 1L,
+                true,
                 true,
                 Collections.singletonList(new ProductImageDto(1L, 1L, ""))
         );

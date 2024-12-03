@@ -11,4 +11,5 @@ public interface UserServiceInterface {
     UserDto getCurrentUser();
     UserDto updateUser(Long id, UserDto userDto) throws Exception;
     User getLoggedUser();
+    Boolean isEmailRegistered(String email);
 }
