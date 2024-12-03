@@ -1,5 +1,4 @@
 package com.uade.grupo4.backend_ecommerce.controller;
-
 import com.uade.grupo4.backend_ecommerce.controller.dto.ProfileDto;
 import com.uade.grupo4.backend_ecommerce.service.implementations.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class ProfileController {
 
     @PatchMapping
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<ProfileDto> updateProfile(@RequestBody ProfileDto profileDto) {
+    public ResponseEntity<ProfileDto> updateProfile(@RequestBody ProfileDto profileDto) throws Exception {
         ProfileDto updatedProfile = profileService.updateProfile(profileDto);
         return ResponseEntity.ok(updatedProfile);
     }
