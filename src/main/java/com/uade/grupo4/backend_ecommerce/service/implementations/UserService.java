@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 @Service
@@ -69,12 +70,12 @@ public class UserService implements UserServiceInterface {
 
         userRepository.save(user);
 
-        return new UserDto(user.getId(),user.getUserName(), user.getEmail(), user.getFirstName(), user.getLastName());
+        return new UserDto(user.getId(),user.getUserName(), user.getEmail(), user.getFirstName(), user.getLastName(),user.getBirthDate());
     }
 
     public UserDto getUserById(Long id) throws Exception {
         User user = userRepository.findById(id).orElseThrow(() -> new Exception("An error has happened"));
-        return new UserDto(user.getId(), user.getUsername(), user.getEmail(),user.getFirstName(),user.getLastName());
+        return new UserDto(user.getId(), user.getUsername(), user.getEmail(),user.getFirstName(),user.getLastName(),user.getBirthDate());
     }
 
     public UserDto updateUser(Long id, UserDto userDto) throws Exception {
@@ -96,16 +97,26 @@ public class UserService implements UserServiceInterface {
         if (userDto.getLastName() != null && !userDto.getLastName().isEmpty()) {
             user.setLastName(userDto.getLastName());
         }
+        if(userDto.getBirthDate() != null){
+            user.setBirthDate(userDto.getBirthDate());
+        }
 
+        if (!Objects.equals(userDto.getEmail(), user.getEmail()) && userRepository.findByEmail(userDto.getEmail()).isPresent()) {
+            throw new ValidationException("The email is already used.");
+        }
 
-        // Solo permitir al admin actualizar los datos del usuario
-        user.setUsername(userDto.getUsername());
-        user.setEmail(userDto.getEmail());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
+        if (!isValidEmail(userDto.getEmail())) {
+            throw new ValidationException("Invalid email format.");
+        }
+
+        // maximo de edad 100 años
+        if (isOlderThan(userDto.getBirthDate())) {
+            throw new ValidationException("User cannot be older than 100 years.");
+        }
+
 
         userRepository.save(user);
-        return new UserDto(user.getId(), user.getUserName(), user.getEmail(), user.getFirstName(), user.getLastName());
+        return new UserDto(user.getId(), user.getUserName(), user.getEmail(), user.getFirstName(), user.getLastName(),user.getBirthDate());
     }
 
     public long getCurrentUserId() {

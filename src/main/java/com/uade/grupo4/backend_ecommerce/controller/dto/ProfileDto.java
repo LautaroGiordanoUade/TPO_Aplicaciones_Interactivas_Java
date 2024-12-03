@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ public class ProfileDto {
     private String email;
     private String firstName;
     private String lastName;
+    private LocalDate birthDate;
     private List<CartDto> carts;
 
          public ProfileDto(User user, List<Cart> carts) {
@@ -28,6 +30,7 @@ public class ProfileDto {
             this.email = user.getEmail();
             this.firstName = user.getFirstName();
             this.lastName = user.getLastName();
+            this.birthDate=user.getBirthDate();
             this.carts = carts.stream()
                     .map(CartMapper::toDTO)
                     .collect(Collectors.toList());
