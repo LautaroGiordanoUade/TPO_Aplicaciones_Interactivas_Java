@@ -27,6 +27,7 @@ public class SecurityConfig {
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(req -> req.requestMatchers("/api/v1/auth/**").permitAll()
                                                 .requestMatchers("/api/v1/user/register").permitAll()
+                                        .requestMatchers("/api/v1/user/checkEmail").permitAll()
                                         .requestMatchers("/api/v1/user/admin/**").hasAnyAuthority(RoleEnum.ADMIN.name())
                                         //.requestMatchers("/api/v1/product/admin/**").hasAnyAuthority(RoleEnum.ADMIN.name())
                                         //.requestMatchers("/api/v1/product/user/**").hasAnyAuthority(RoleEnum.USER.name())

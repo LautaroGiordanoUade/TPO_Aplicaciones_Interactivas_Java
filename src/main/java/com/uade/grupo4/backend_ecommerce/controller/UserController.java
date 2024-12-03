@@ -46,4 +46,13 @@ public class UserController {
         UserDto user = userService.getUserById(userId);
         return ResponseEntity.ok(user);
     }
+
+    @GetMapping("/checkEmail")
+    public ResponseEntity<String> checkEmail(@RequestParam String email) {
+        boolean isRegistered = userService.isEmailRegistered(email);
+        if (!isRegistered) {
+            return ResponseEntity.badRequest().body("The email is not registered.");
+        }
+        return ResponseEntity.ok("La contraseña ha sido reseteada revise su correo por favor.");
+    }
 }
